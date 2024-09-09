@@ -29,11 +29,10 @@ public class EnemyController : MonoBehaviour
 
     private void ChangeDirection(Vector3 direction)
     {
-        float angle = Vector3.Angle(direction, enemyBodyTransform.up);
-        Debug.Log(angle);
-        if (angle >= 180f)
+        float dotProduct = Vector3.Dot(direction, enemyBodyTransform.position);
+        if (dotProduct < 0)
             enemyBodyTransform.eulerAngles = new Vector3(0f, 180f, 0f);
-        else if(angle < 180f)
+        else if(dotProduct > 0)
             enemyBodyTransform.eulerAngles = Vector3.zero;
     }
 }
