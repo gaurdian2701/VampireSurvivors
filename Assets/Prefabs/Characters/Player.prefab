@@ -196,7 +196,6 @@ MonoBehaviour:
   maxHealth: 0
   movementSpeed: 7
   playerBodyTransform: {fileID: 1570081554741246014}
-  rb: {fileID: 5141934521316260585}
   axeController: {fileID: 7403063155684174424, guid: 4c08c483a3673e44ea867c83183b352e, type: 3}
 --- !u!50 &5141934521316260585
 Rigidbody2D:
@@ -224,4 +223,4 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
