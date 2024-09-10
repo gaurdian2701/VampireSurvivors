@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Character
 {
+    [SerializeField] private int maxHealth;
     [SerializeField] private float movementSpeed;
     [SerializeField] private Transform playerBodyTransform;
     [SerializeField] private Transform primaryWeaponTransform;
@@ -14,14 +15,16 @@ public class PlayerController : MonoBehaviour
     private Vector3 movementVector;
     private bool attackingWithPrimaryWeapon;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
+    {
+        Init(maxHealth);
+    }
+    private void Start()
     {
         attackingWithPrimaryWeapon = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         MovePlayer();
         AttackWithPrimaryWeapon();
@@ -55,5 +58,10 @@ public class PlayerController : MonoBehaviour
     {
         if(attackingWithPrimaryWeapon)
             primaryWeaponTransform.RotateAround(playerBodyTransform.position, Vector3.forward, rotSpeed * Time.deltaTime);
+    }
+
+    public override void TakeDamage(int someDamage)
+    {
+        base.TakeDamage(someDamage);
     }
 }

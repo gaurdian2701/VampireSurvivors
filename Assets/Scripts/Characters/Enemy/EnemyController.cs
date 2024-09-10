@@ -2,12 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : Character
 {
+    [SerializeField] private int maxHealth;
     [SerializeField] private float enemySpeed;
     [SerializeField] private Transform enemyBodyTransform;
 
     private Transform playerTransform;
+    private Vector3 directionToPlayer;
+
+    private void Awake()
+    {
+        Init(maxHealth);
+    }
 
     private void Start()
     {
@@ -21,7 +28,7 @@ public class EnemyController : MonoBehaviour
 
     private void MoveEnemy()
     {
-        Vector3 directionToPlayer = playerTransform.position - transform.position;
+        directionToPlayer = playerTransform.position - transform.position;
         directionToPlayer.z = 0;
         transform.position += directionToPlayer.normalized * enemySpeed * Time.deltaTime;
         ChangeDirection(directionToPlayer);
@@ -34,5 +41,10 @@ public class EnemyController : MonoBehaviour
             enemyBodyTransform.eulerAngles = new Vector3(0f, 180f, 0f);
         else if(dotProduct > 0)
             enemyBodyTransform.eulerAngles = Vector3.zero;
+    }
+
+    public override void TakeDamage(int someDamage)
+    {
+        base.TakeDamage(someDamage);
     }
 }
