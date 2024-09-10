@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
-
 public class PlayerController : Character
 {
     [SerializeField] private int maxHealth;
@@ -11,17 +10,22 @@ public class PlayerController : Character
     [SerializeField] private Transform playerBodyTransform;
     [SerializeField] private Transform primaryWeaponTransform;
     [SerializeField] private float rotSpeed;
+    [SerializeField] private AxeController axeController;
 
     private Vector3 movementVector;
-    private bool attackingWithPrimaryWeapon;
+    private Weapon currentMeleeWeapon;
+    private bool attackingWithMeleeWeapon;
 
     private void Awake()
     {
         Init(maxHealth);
+        axeController = Instantiate(axeController);
+        axeController.InitializeWeaponPositionAndOrientation(transform, playerBodyTransform);
+        currentMeleeWeapon = axeController;
     }
     private void Start()
     {
-        attackingWithPrimaryWeapon = false;
+        attackingWithMeleeWeapon = false;
     }
 
     private void Update()
@@ -40,9 +44,9 @@ public class PlayerController : Character
     public void TakePlayerAttackInput(InputAction.CallbackContext ctx)
     {    
         if(ctx.ReadValue<float>() > 0f)
-            attackingWithPrimaryWeapon = true;
+            attackingWithMeleeWeapon = true;
         else
-            attackingWithPrimaryWeapon = false;
+            attackingWithMeleeWeapon = false;
     }
 
     private void ChangeDirection(float input)
@@ -56,12 +60,12 @@ public class PlayerController : Character
     private void MovePlayer() => transform.position += movementVector * Time.deltaTime;
     private void AttackWithPrimaryWeapon()
     {
-        if(attackingWithPrimaryWeapon)
-            primaryWeaponTransform.RotateAround(playerBodyTransform.position, Vector3.forward, rotSpeed * Time.deltaTime);
+        if (attackingWithMeleeWeapon)
+            currentMeleeWeapon.Attack();
     }
 
-    public override void TakeDamage(int someDamage)
+    public override void TakeDamage(int someDamage, float knockBackForce)
     {
-        base.TakeDamage(someDamage);
+        base.TakeDamage(someDamage, knockBackForce);
     }
 }

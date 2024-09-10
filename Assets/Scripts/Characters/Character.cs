@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : MonoBehaviour
@@ -10,7 +8,7 @@ public class Character : MonoBehaviour
     {
         HealthController = new HealthController(maxHealth);
     }
-    public virtual void TakeDamage(int someDamage)
+    public virtual void TakeDamage(int someDamage, float knockBackForce)
     {
         HealthController.DecreaseHealth(someDamage);
     }

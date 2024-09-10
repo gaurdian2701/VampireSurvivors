@@ -131,8 +131,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6009ee434d3d5545819d994e68c5687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 0
   enemySpeed: 2
   enemyBodyTransform: {fileID: 8943446801406790251}
+  enemySprite: {fileID: 0}
+  rigidBody: {fileID: 7463086524684811735}
 --- !u!61 &3220987307181178202
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -204,4 +207,4 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
