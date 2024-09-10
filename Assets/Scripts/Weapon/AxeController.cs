@@ -28,10 +28,4 @@ public class AxeController : Weapon
     {
         transform.RotateAround(playerBodyTransform.position, Vector3.forward, baseAttackSpeed * Time.deltaTime);
     }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.TryGetComponent<EnemyController>(out EnemyController enemy))
-            enemy.TakeDamage(baseDamage, knockBackForce);
-    }
 }

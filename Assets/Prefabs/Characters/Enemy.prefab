@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8943446801406790251}
   - component: {fileID: 5834159095266766742}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EnemyBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 5201406064040359947}
   - component: {fileID: 3220987307181178202}
   - component: {fileID: 7463086524684811735}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ MonoBehaviour:
   enemySpeed: 2
   enemyBodyTransform: {fileID: 8943446801406790251}
   enemySprite: {fileID: 0}
-  rigidBody: {fileID: 7463086524684811735}
+  rb: {fileID: 7463086524684811735}
 --- !u!61 &3220987307181178202
 BoxCollider2D:
   m_ObjectHideFlags: 0

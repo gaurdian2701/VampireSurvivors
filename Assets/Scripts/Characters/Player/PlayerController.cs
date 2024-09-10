@@ -8,8 +8,6 @@ public class PlayerController : Character
     [SerializeField] private int maxHealth;
     [SerializeField] private float movementSpeed;
     [SerializeField] private Transform playerBodyTransform;
-    [SerializeField] private Transform primaryWeaponTransform;
-    [SerializeField] private float rotSpeed;
     [SerializeField] private AxeController axeController;
 
     private Vector3 movementVector;

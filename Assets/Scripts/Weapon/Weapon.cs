@@ -15,4 +15,10 @@ public class Weapon : MonoBehaviour
         this.knockBackForce = weaponData.KnockbackForce;
     }
     public virtual void Attack() { }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.TryGetComponent<EnemyController>(out EnemyController enemy))
+            enemy.TakeDamage(baseDamage, knockBackForce);
+    }
 }

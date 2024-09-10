@@ -3,24 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
+using System.Threading.Tasks;
 public class EnemyController : Character
 {
     [SerializeField] private int maxHealth;
     [SerializeField] private float enemySpeed;
     [SerializeField] private Transform enemyBodyTransform;
     [SerializeField] private Sprite enemySprite;
-    [SerializeField] private Rigidbody2D rigidBody;
+    [SerializeField] private Rigidbody2D rb;
+
+    private static float knockBackDuration = 0.2f;
 
     private Transform playerTransform;
     private Vector3 directionToPlayer;
-    private bool isInKnockBack;
-
-    private static float knockBackDuration = 0.1f;
+    private bool isInKnockBack = false;
+    private float currentEnemySpeed;
 
     private void Awake()
     {
         Init(maxHealth);
-        isInKnockBack = false;
+        currentEnemySpeed = enemySpeed;
     }
 
     private void Start()
@@ -30,15 +32,20 @@ public class EnemyController : Character
 
     private void Update()
     {
+        CalculatePlayerDirectionVector();
+        ChangeDirection(directionToPlayer.normalized);
+    }
+    private void FixedUpdate()
+    {
         MoveEnemy();
     }
+    private void MoveEnemy() =>
+        transform.position += directionToPlayer.normalized * currentEnemySpeed * Time.deltaTime;
 
-    private void MoveEnemy()
+    private void CalculatePlayerDirectionVector()
     {
         directionToPlayer = playerTransform.position - transform.position;
         directionToPlayer.z = 0;
-        transform.position += enemySpeed * Time.deltaTime * directionToPlayer.normalized;
-        ChangeDirection(directionToPlayer.normalized);
     }
 
     private void ChangeDirection(Vector3 direction)
@@ -53,17 +60,33 @@ public class EnemyController : Character
     public override void TakeDamage(int someDamage, float knockBackForce)
     {
         base.TakeDamage(someDamage, knockBackForce);
-        rigidBody.AddForce(new Vector3(-directionToPlayer.x, directionToPlayer.y, 0f) * knockBackForce, ForceMode2D.Impulse);
-        if(!isInKnockBack)
-            StartCoroutine(SlowKnockBack());
+        if (!isInKnockBack)
+            SlowKnockBack(knockBackForce);
     }
 
-    private IEnumerator SlowKnockBack()
+    private async void SlowKnockBack(float knockBackForce)
     {
         isInKnockBack = true;
-        yield return new WaitForSecondsRealtime(knockBackDuration);
-        Debug.Log("coroutine finished executing");
-        rigidBody.velocity = Vector2.zero;
+        currentEnemySpeed = 0f;
+        Vector2 knockBackDirection = transform.position - playerTransform.position;
+        rb.AddForce(knockBackDirection.normalized * knockBackForce, ForceMode2D.Impulse);
+
+        await Task.Delay((int)Math.Abs(knockBackDuration * 1000));
+
+        NullifyVelocities();
+        currentEnemySpeed = enemySpeed;
         isInKnockBack = false;
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        //When enemies collide into one another during knockback,
+        //they start to gain velocity, which is undesired behaviour.
+        //This did not work with OnCollisionEnter2D for some reason.
+        NullifyVelocities();
+    }
+    private void NullifyVelocities()
+    {
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
     }
 }
