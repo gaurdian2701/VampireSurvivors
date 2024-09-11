@@ -262,6 +262,7 @@ MonoBehaviour:
   Player: {fileID: 2848921975344159100}
   MainCamera: {fileID: 519420031}
   enemySpawnServiceScriptableObject: {fileID: 11400000, guid: f1ca32510dc435b45910082b056b24bb, type: 2}
+  objectPoolServiceScriptableObject: {fileID: 11400000, guid: 805103fb2ece8fb4cbcc574211ec2f71, type: 2}
 --- !u!4 &1513865591
 Transform:
   m_ObjectHideFlags: 0

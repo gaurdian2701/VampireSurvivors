@@ -10,8 +10,10 @@ public class GameManager : MonoBehaviour
     public PlayerController Player;
     public Camera MainCamera;
     public EventService EventService;
+    public ObjectPoolingService ObjectPoolingService;
 
     [SerializeField] private EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject;
+    [SerializeField] private ObjectPoolServiceScriptableObject objectPoolServiceScriptableObject;
 
     private EnemySpawnService enemySpawnService;
 
@@ -32,11 +34,11 @@ public class GameManager : MonoBehaviour
     private void InitializeServices()
     {
         EventService = new EventService();
-        enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject, MainCamera);
+        ObjectPoolingService = new ObjectPoolingService(objectPoolServiceScriptableObject);
     }
 
-    private void Update()
+    private void Start()
     {
-
+        enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject, MainCamera);
     }
 }

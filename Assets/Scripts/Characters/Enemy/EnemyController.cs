@@ -36,6 +36,11 @@ public class EnemyController : Character
         playerTransform = GameManager.Instance.Player.transform;
     }
 
+    private void OnEnable()
+    {
+        HealthController.ResetHealth();
+    }
+
     private void Update()
     {
         CalculatePlayerDirectionVector();
@@ -102,6 +107,7 @@ public class EnemyController : Character
     public override void Die()
     {
         GameManager.Instance.EventService.InvokeEnemyDiedEvent();
-        Destroy(gameObject);
+        GameManager.Instance.ObjectPoolingService.MermanEnemyPool.ReturnObjectToPool(this);
+        gameObject.SetActive(false);
     }
 }

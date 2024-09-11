@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2e7ea321f49ccd4e905953eba37b7e9, type: 3}
-  m_Name: EnemySpawnServiceScriptableObject
+  m_Script: {fileID: 11500000, guid: 84387fab92e752542be5810cf9865796, type: 3}
+  m_Name: ObjectPoolServiceScriptableObject
   m_EditorClassIdentifier: 
-  StartingNumberOfEnemies: 6
+  Merman_EnemyPrefab: {fileID: 5201406064040359947, guid: b83fb5ccf17fa5a4fbd804d18c9f3468, type: 3}
+  MaxEnemies: 10
