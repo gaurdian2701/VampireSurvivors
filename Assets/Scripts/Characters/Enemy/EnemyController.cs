@@ -6,23 +6,29 @@ using UnityEngine;
 using System.Threading.Tasks;
 public class EnemyController : Character
 {
-    [SerializeField] private int maxHealth;
-    [SerializeField] private float enemySpeed;
-    [SerializeField] private Transform enemyBodyTransform;
-    [SerializeField] private Sprite enemySprite;
-    [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private EnemyScriptableObject enemyData;
 
-    private static float knockBackDuration = 0.2f;
+    [Header("ENEMY COMPONENTS")]
+    [SerializeField] private Transform enemyBodyTransform;
+    [SerializeField] private SpriteRenderer enemySpriteRenderer;
+    [SerializeField] private Rigidbody2D rb;
 
     private Transform playerTransform;
     private Vector3 directionToPlayer;
     private bool isInKnockBack = false;
+
     private float currentEnemySpeed;
+    private Color originalEnemyColor;
+
+    private static float knockBackDuration = 0.2f;
+    private int millisecondsPerSecond = 1000;
+    private Color enemyColorOnHit = new Color(205f, 0f, 0f);
 
     private void Awake()
     {
-        Init(maxHealth);
-        currentEnemySpeed = enemySpeed;
+        Init(enemyData.MaxHealth, enemyData.EnemySpeed);
+        currentEnemySpeed = MaxSpeed;
+        originalEnemyColor = enemySpriteRenderer.color;
     }
 
     private void Start()
@@ -59,22 +65,25 @@ public class EnemyController : Character
 
     public override void TakeDamage(int someDamage, float knockBackForce)
     {
-        base.TakeDamage(someDamage, knockBackForce);
         if (!isInKnockBack)
-            SlowKnockBack(knockBackForce);
+            Async_InitiateKnockBack(knockBackForce);
+
+        base.TakeDamage(someDamage, knockBackForce);
     }
 
-    private async void SlowKnockBack(float knockBackForce)
+    private async void Async_InitiateKnockBack(float knockBackForce)
     {
         isInKnockBack = true;
         currentEnemySpeed = 0f;
+        enemySpriteRenderer.color = enemyColorOnHit;
         Vector2 knockBackDirection = transform.position - playerTransform.position;
         rb.AddForce(knockBackDirection.normalized * knockBackForce, ForceMode2D.Impulse);
 
-        await Task.Delay((int)Math.Abs(knockBackDuration * 1000));
+        await Task.Delay((int)Math.Abs(knockBackDuration * millisecondsPerSecond));
 
         NullifyVelocities();
-        currentEnemySpeed = enemySpeed;
+        currentEnemySpeed = MaxSpeed;
+        enemySpriteRenderer.color = originalEnemyColor;
         isInKnockBack = false;
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -88,5 +97,11 @@ public class EnemyController : Character
     {
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
+    }
+
+    public override void Die()
+    {
+        GameManager.Instance.EventService.InvokeEnemyDiedEvent();
+        Destroy(gameObject);
     }
 }

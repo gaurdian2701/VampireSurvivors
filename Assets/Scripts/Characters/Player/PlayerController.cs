@@ -16,7 +16,7 @@ public class PlayerController : Character
 
     private void Awake()
     {
-        Init(maxHealth);
+        Init(maxHealth, movementSpeed); // SO for player to be made later
         axeController = Instantiate(axeController);
         axeController.InitializeWeaponPositionAndOrientation(transform, playerBodyTransform);
         currentMeleeWeapon = axeController;
