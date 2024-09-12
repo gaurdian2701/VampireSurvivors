@@ -7,5 +7,6 @@ public class EnemyScriptableObject : ScriptableObject
 {
     public int MaxHealth;
     public float EnemySpeed;
+    public float EnemySpeedModifier;
     public Sprite EnemyImage;
 }

@@ -11,9 +11,6 @@ public class GenericObjectPool<T> where T : class
     {
         if (pooledObjects.Count > 0)
         {
-            if (pooledObjects.Count == maxObjectsInPool)
-                return null;
-
             PooledObject<T> pooledObject = pooledObjects.Find(x => x.IsUsed == false);
             if (pooledObject != null)
             {
@@ -26,6 +23,9 @@ public class GenericObjectPool<T> where T : class
     
     private T CreateNewPooledObject()
     {
+        if (pooledObjects.Count == maxObjectsInPool)
+            return null;
+
         PooledObject<T> pooledObject = new PooledObject<T>();
         pooledObject.Object = CreateNewObject();
         pooledObject.IsUsed = true;

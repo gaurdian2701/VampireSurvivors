@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: EnemySpawnServiceScriptableObject
   m_EditorClassIdentifier: 
   StartingNumberOfEnemies: 6
+  NumberOfEnemiesInHorde: 10
+  StartingNumberOfKillsToInitiateHorde: 10

@@ -14,10 +14,13 @@ public class EnemyController : Character
     [SerializeField] private Rigidbody2D rb;
 
     private Transform playerTransform;
+    private Transform playerBodyTransform;
     private Vector3 directionToPlayer;
     private bool isInKnockBack = false;
 
     private float currentEnemySpeed;
+    private float enemySpeedModifier;
+    private float currentEnemySpeedModifier;
     private Color originalEnemyColor;
 
     private static float knockBackDuration = 0.2f;
@@ -28,12 +31,15 @@ public class EnemyController : Character
     {
         Init(enemyData.MaxHealth, enemyData.EnemySpeed);
         currentEnemySpeed = MaxSpeed;
+        enemySpeedModifier = enemyData.EnemySpeedModifier;
+        currentEnemySpeedModifier = enemySpeedModifier;
         originalEnemyColor = enemySpriteRenderer.color;
     }
 
     private void Start()
     {
         playerTransform = GameManager.Instance.Player.transform;
+        playerBodyTransform = GameManager.Instance.Player.GetPlayerBodyTransform();
     }
 
     private void OnEnable()
@@ -51,7 +57,7 @@ public class EnemyController : Character
         MoveEnemy();
     }
     private void MoveEnemy() =>
-        transform.position += directionToPlayer.normalized * currentEnemySpeed * Time.deltaTime;
+        transform.position += directionToPlayer.normalized * currentEnemySpeed * currentEnemySpeedModifier * Time.deltaTime;
 
     private void CalculatePlayerDirectionVector()
     {
@@ -61,11 +67,15 @@ public class EnemyController : Character
 
     private void ChangeDirection(Vector3 direction)
     {
-        float dotProduct = Vector3.Dot(transform.right, direction);
-        if (dotProduct < 0)
-            enemyBodyTransform.eulerAngles = new Vector3(0f, 180f, 0f);
-        else if(dotProduct >= 0)
-            enemyBodyTransform.eulerAngles = Vector3.zero;
+        if (transform.position.x < playerTransform.position.x)
+            transform.eulerAngles = new Vector3(0f, 180f, 0f);
+        else
+            transform.eulerAngles = Vector3.zero;
+
+        if (Vector2.Dot(playerBodyTransform.right, transform.position - playerTransform.position) < 0f)
+            currentEnemySpeedModifier = 1f;
+        else
+            currentEnemySpeedModifier = enemySpeedModifier;
     }
 
     public override void TakeDamage(int someDamage, float knockBackForce)

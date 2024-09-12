@@ -39,6 +39,8 @@ public class PlayerController : Character
         ChangeDirection(playerInput.x);
     }
 
+    public Transform GetPlayerBodyTransform() => playerBodyTransform;
+
     public void TakePlayerAttackInput(InputAction.CallbackContext ctx)
     {    
         if(ctx.ReadValue<float>() > 0f)

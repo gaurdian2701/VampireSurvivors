@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: ObjectPoolServiceScriptableObject
   m_EditorClassIdentifier: 
   Merman_EnemyPrefab: {fileID: 5201406064040359947, guid: b83fb5ccf17fa5a4fbd804d18c9f3468, type: 3}
-  MaxEnemies: 10
+  MaxEnemies: 30
