@@ -15,4 +15,5 @@ MonoBehaviour:
   MaxHealth: 6
   EnemySpeed: 2
   EnemySpeedModifier: 1.8
+  StoppingDistance: 1.2
   EnemyImage: {fileID: 21300000, guid: 77c04dc0f203dfb4b8850d6f088eae20, type: 3}

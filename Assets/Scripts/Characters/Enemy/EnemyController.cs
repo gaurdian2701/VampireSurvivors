@@ -21,6 +21,7 @@ public class EnemyController : Character
     private float currentEnemySpeed;
     private float enemySpeedModifier;
     private float currentEnemySpeedModifier;
+    private float stoppingDistance;
     private Color originalEnemyColor;
 
     private static float knockBackDuration = 0.2f;
@@ -30,8 +31,9 @@ public class EnemyController : Character
     private void Awake()
     {
         Init(enemyData.MaxHealth, enemyData.EnemySpeed);
-        currentEnemySpeed = MaxSpeed;
         enemySpeedModifier = enemyData.EnemySpeedModifier;
+        stoppingDistance = enemyData.StoppingDistance;
+        currentEnemySpeed = MaxSpeed;
         currentEnemySpeedModifier = enemySpeedModifier;
         originalEnemyColor = enemySpriteRenderer.color;
     }
@@ -51,6 +53,8 @@ public class EnemyController : Character
     {
         CalculatePlayerDirectionVector();
         ChangeDirection(directionToPlayer.normalized);
+        CheckIfPlayerIsFacingEnemy();
+        CheckStoppingDistance();
     }
     private void FixedUpdate()
     {
@@ -58,6 +62,14 @@ public class EnemyController : Character
     }
     private void MoveEnemy() =>
         transform.position += directionToPlayer.normalized * currentEnemySpeed * currentEnemySpeedModifier * Time.deltaTime;
+
+    private void CheckStoppingDistance()
+    {
+        if (directionToPlayer.magnitude < stoppingDistance)
+            currentEnemySpeed = 0f;
+        else
+            currentEnemySpeed = MaxSpeed;
+    }
 
     private void CalculatePlayerDirectionVector()
     {
@@ -71,7 +83,10 @@ public class EnemyController : Character
             transform.eulerAngles = new Vector3(0f, 180f, 0f);
         else
             transform.eulerAngles = Vector3.zero;
+    }
 
+    private void CheckIfPlayerIsFacingEnemy()
+    {
         if (Vector2.Dot(playerBodyTransform.right, transform.position - playerTransform.position) < 0f)
             currentEnemySpeedModifier = 1f;
         else
