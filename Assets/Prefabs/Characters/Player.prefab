@@ -196,6 +196,7 @@ MonoBehaviour:
   maxHealth: 0
   movementSpeed: 7
   playerBodyTransform: {fileID: 1570081554741246014}
+  playerSpriteRenderer: {fileID: 5644590451601104637}
   axeController: {fileID: 7403063155684174424, guid: 4c08c483a3673e44ea867c83183b352e, type: 3}
 --- !u!50 &5141934521316260585
 Rigidbody2D:

@@ -72,8 +72,6 @@ public class EnemySpawnService
             enemyToBeSpawned.transform.position = GetCoordinatesOutsideOfPlayerView(radiansPositionOnCircle);
         }
     }
-
-
     private Vector3 GetCoordinatesOutsideOfPlayerView(float radians)
     {
         //Then convert the radian to a vector by using sin and cos since both gives us a point on the circle

@@ -8,6 +8,7 @@ public class PlayerController : Character
     [SerializeField] private int maxHealth;
     [SerializeField] private float movementSpeed;
     [SerializeField] private Transform playerBodyTransform;
+    [SerializeField] private SpriteRenderer playerSpriteRenderer;
     [SerializeField] private AxeController axeController;
 
     private Vector3 movementVector;
@@ -52,9 +53,9 @@ public class PlayerController : Character
     private void ChangeDirection(float input)
     {
         if (input > 0f)
-            playerBodyTransform.eulerAngles = new Vector3(0f, 180f, 0f);
+            playerSpriteRenderer.flipX = true;
         else if (input < 0f)
-            playerBodyTransform.eulerAngles = Vector3.zero;
+            playerSpriteRenderer.flipX = false;
     }
 
     private void MovePlayer() => transform.position += movementVector * Time.deltaTime;

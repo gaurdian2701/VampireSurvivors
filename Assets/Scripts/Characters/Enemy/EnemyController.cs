@@ -58,15 +58,13 @@ public class EnemyController : Character
 
     private void Update()
     {
-        CalculatePlayerDirectionVector();
+        MoveEnemy();
+        CalculateDirectionToPlayerVector();
         ChangeDirection(directionToPlayer.normalized);
         CheckIfPlayerIsFacingEnemy();
         CheckStoppingDistance();
     }
-    private void FixedUpdate()
-    {
-        MoveEnemy();
-    }
+    
     private void MoveEnemy() =>
         transform.position += directionToPlayer.normalized * currentEnemySpeed * currentEnemySpeedModifier * Time.deltaTime;
 
@@ -78,7 +76,7 @@ public class EnemyController : Character
             currentEnemySpeed = MaxSpeed;
     }
 
-    private void CalculatePlayerDirectionVector()
+    private void CalculateDirectionToPlayerVector()
     {
         directionToPlayer = playerTransform.position - transform.position;
         directionToPlayer.z = 0;
