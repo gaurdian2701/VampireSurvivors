@@ -11,8 +11,10 @@ public class EnemyController : Character
     [Header("ENEMY COMPONENTS")]
     [SerializeField] private Transform enemyBodyTransform;
     [SerializeField] private SpriteRenderer enemySpriteRenderer;
+    [SerializeField] private SpriteRenderer bloodSplatterSpriteRenderer;
     [SerializeField] private Rigidbody2D rb;
-
+    [SerializeField] private Animator animator;
+    
     private Transform playerTransform;
     private Transform playerBodyTransform;
     private Vector3 directionToPlayer;
@@ -36,6 +38,8 @@ public class EnemyController : Character
         currentEnemySpeed = MaxSpeed;
         currentEnemySpeedModifier = enemySpeedModifier;
         originalEnemyColor = enemySpriteRenderer.color;
+        animator.enabled = false;
+        bloodSplatterSpriteRenderer.enabled = false;
     }
 
     private void Start()
@@ -47,6 +51,9 @@ public class EnemyController : Character
     private void OnEnable()
     {
         HealthController.ResetHealth();
+        animator.enabled = false;
+        bloodSplatterSpriteRenderer.enabled = false;
+        enemySpriteRenderer.enabled = true;
     }
 
     private void Update()
@@ -129,7 +136,16 @@ public class EnemyController : Character
         rb.angularVelocity = 0f;
     }
 
-    public override void Die()
+    public override void Die() => InitiateDeathAnimation();
+
+    private void InitiateDeathAnimation()
+    {
+        animator.enabled = true;
+        bloodSplatterSpriteRenderer.enabled = true;
+        enemySpriteRenderer.enabled = false;    
+    }
+
+    public void OnDied()
     {
         GameManager.Instance.EventService.InvokeEnemyDiedEvent();
         GameManager.Instance.ObjectPoolingService.MermanEnemyPool.ReturnObjectToPool(this);
