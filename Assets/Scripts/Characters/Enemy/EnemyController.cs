@@ -60,7 +60,7 @@ public class EnemyController : Character
     {
         MoveEnemy();
         CalculateDirectionToPlayerVector();
-        ChangeDirection(directionToPlayer.normalized);
+        UpdateDirection();
         CheckIfPlayerIsFacingEnemy();
         CheckStoppingDistance();
     }
@@ -82,7 +82,7 @@ public class EnemyController : Character
         directionToPlayer.z = 0;
     }
 
-    private void ChangeDirection(Vector3 direction)
+    private void UpdateDirection()
     {
         if (transform.position.x < playerTransform.position.x)
             enemySpriteRenderer.flipX = true;

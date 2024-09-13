@@ -30,7 +30,7 @@ public class PlayerController : Character
     private void Update()
     {
         MovePlayer();
-        AttackWithPrimaryWeapon();
+        AttackWithMeleeWeapon();
     }
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
@@ -42,7 +42,7 @@ public class PlayerController : Character
 
     public Transform GetPlayerBodyTransform() => playerBodyTransform;
 
-    public void TakePlayerAttackInput(InputAction.CallbackContext ctx)
+    public void GetPlayerMeleeAttackInput(InputAction.CallbackContext ctx)
     {    
         if(ctx.ReadValue<float>() > 0f)
             attackingWithMeleeWeapon = true;
@@ -59,7 +59,7 @@ public class PlayerController : Character
     }
 
     private void MovePlayer() => transform.position += movementVector * Time.deltaTime;
-    private void AttackWithPrimaryWeapon()
+    private void AttackWithMeleeWeapon()
     {
         if (attackingWithMeleeWeapon)
             currentMeleeWeapon.Attack();

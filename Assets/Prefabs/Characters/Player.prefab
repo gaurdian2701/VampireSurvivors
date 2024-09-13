@@ -164,7 +164,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6345712701412990177}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: TakePlayerAttackInput
+        m_MethodName: GetPlayerMeleeAttackInput
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
