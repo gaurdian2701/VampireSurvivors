@@ -87,12 +87,12 @@ public class EnemyController : Character
     private void ChangeDirection(Vector3 direction)
     {
         if (transform.position.x < playerTransform.position.x)
-            transform.eulerAngles = new Vector3(0f, 180f, 0f);
+            enemySpriteRenderer.flipX = true;
         else
-            transform.eulerAngles = Vector3.zero;
+            enemySpriteRenderer.flipX = false;
     }
 
-    private void CheckIfPlayerIsFacingEnemy()
+    private void CheckIfPlayerIsFacingEnemy() //Enemy moves faster if player is not facing enemy
     {
         if (Vector2.Dot(playerBodyTransform.right, transform.position - playerTransform.position) < 0f)
             currentEnemySpeedModifier = 1f;

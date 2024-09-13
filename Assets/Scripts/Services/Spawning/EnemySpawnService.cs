@@ -10,7 +10,7 @@ public class EnemySpawnService
     private int startingNumberOfEnemies;
     private int numberOfEnemiesInHorde;
     
-    private static float spawnCircleRadius = 12f;
+    private static float spawnCircleRadius = 15f;
     private static int currentNumberOfKillsToInitiateHorde;
     private int currentKillCountForHorde;
 
