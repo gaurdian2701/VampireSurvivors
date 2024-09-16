@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get { return instance; } }
 
     public PlayerController Player;
-    public Camera MainCamera;
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;
 
@@ -39,6 +38,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject, MainCamera);
+        enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
     }
 }

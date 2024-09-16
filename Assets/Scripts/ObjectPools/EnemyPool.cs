@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Merman_EnemyPool : GenericObjectPool<EnemyController>
+public class EnemyPool : GenericObjectPool<EnemyController>
 {
     private EnemyController enemyPrefab;
 
-    public Merman_EnemyPool(EnemyController enemyPrefab, int maxObjectsInPool)
+    public EnemyPool(EnemyController enemyPrefab, int maxObjectsInPool)
     {
         this.enemyPrefab = enemyPrefab;
         this.maxObjectsInPool = maxObjectsInPool;
@@ -20,5 +20,5 @@ public class Merman_EnemyPool : GenericObjectPool<EnemyController>
     {
         EnemyController enemy = GameObject.Instantiate(enemyPrefab);
         return enemy;
-    }
+    } 
 }

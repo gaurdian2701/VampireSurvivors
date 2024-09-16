@@ -10,4 +10,6 @@ public class EnemyScriptableObject : ScriptableObject
     public float EnemySpeedModifier;
     public float StoppingDistance;
     public Sprite EnemyImage;
+    public EnemyMovementType EnemyMovementType;
+    public EnemyClass EnemyClass;
 }

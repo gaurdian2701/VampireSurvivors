@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EnemySpawnService
 {
-    private Camera mainCamera;
     private EnemyController enemyToBeSpawned;
     private Transform playerTransform;
     private int startingNumberOfEnemies;
@@ -14,17 +13,19 @@ public class EnemySpawnService
     private static int currentNumberOfKillsToInitiateHorde;
     private int currentKillCountForHorde;
 
-    public EnemySpawnService(EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject, Camera mainCamera)
+    public EnemySpawnService(EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject)
     {
-        this.mainCamera = mainCamera;
         startingNumberOfEnemies = enemySpawnServiceScriptableObject.StartingNumberOfEnemies;
         numberOfEnemiesInHorde = enemySpawnServiceScriptableObject.NumberOfEnemiesInHorde;
         currentNumberOfKillsToInitiateHorde = enemySpawnServiceScriptableObject.StartingNumberOfKillsToInitiateHorde;
         playerTransform = GameManager.Instance.Player.transform;
         currentKillCountForHorde = 0;
 
-        for (int i = 0; i < startingNumberOfEnemies; i++)   
-            SpawnEnemy();
+        for (int i = 0; i < startingNumberOfEnemies; i++)
+        {
+            SpawnEnemy(EnemyClass.MERMAN);
+            SpawnEnemy(EnemyClass.RAVEN);
+        }
 
         ListenToEvents();
     }
@@ -34,39 +35,48 @@ public class EnemySpawnService
         GameManager.Instance.EventService.OnEnemyDied += OnEnemyDiedListener;
     }
 
-    private void OnEnemyDiedListener()
+    private void OnEnemyDiedListener(EnemyClass enemyClass)
     {
         currentKillCountForHorde++;
         if (currentKillCountForHorde <= currentNumberOfKillsToInitiateHorde)  
-            SpawnEnemy();
+            SpawnEnemy(enemyClass);
         else
-            SpawnHorde();
+            SpawnHorde(enemyClass);
     }
 
-    private void GetEnemyFromPool()
+    private void GetEnemyFromPool(EnemyClass enemyClass)
     {
-        enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.MermanEnemyPool.GetObjectFromPool();
+        switch (enemyClass)
+        {
+            case EnemyClass.MERMAN :
+                enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.GetObjectFromPool();
+                break;
+            
+            case EnemyClass.RAVEN:
+                enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.Raven_EnemyPool.GetEnemyFromPool();
+                break;
+        }
         if (enemyToBeSpawned == null)
             return;
         enemyToBeSpawned.gameObject.SetActive(true);
     }
 
-    private void SpawnEnemy()
+    private void SpawnEnemy(EnemyClass enemyClass)
     {
-        GetEnemyFromPool();
+        GetEnemyFromPool(enemyClass);
         if(enemyToBeSpawned == null) return;
         //Using 2pi/enemynumber to get enemy position around a circle point in radians,
         //then multiplying it with random number to spawn on random points/equal points around the circle.
         float radiansPositionOnCircle = 2 * Mathf.PI / startingNumberOfEnemies * Random.Range(0f, startingNumberOfEnemies);
         enemyToBeSpawned.transform.position = GetCoordinatesOutsideOfPlayerView(radiansPositionOnCircle);
     }
-    private void SpawnHorde()
+    private void SpawnHorde(EnemyClass enemyClass)
     {
         currentKillCountForHorde = 0;
         currentNumberOfKillsToInitiateHorde = 5;
         for (int i = 0; i < numberOfEnemiesInHorde; i++)
         {
-            GetEnemyFromPool();
+            GetEnemyFromPool(enemyClass);
             float radiansPositionOnCircle = 2 * Mathf.PI / numberOfEnemiesInHorde * i;
             if (enemyToBeSpawned == null) return;
             enemyToBeSpawned.transform.position = GetCoordinatesOutsideOfPlayerView(radiansPositionOnCircle);

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EventService
 {
-    public delegate void OnEnemyDiedDelegate();
+    public delegate void OnEnemyDiedDelegate(EnemyClass enemyClass);
 
     public event OnEnemyDiedDelegate OnEnemyDied;
-    public void InvokeEnemyDiedEvent() => OnEnemyDied?.Invoke();
+    public void InvokeEnemyDiedEvent(EnemyClass enemyClass) => OnEnemyDied?.Invoke(enemyClass);
 }
