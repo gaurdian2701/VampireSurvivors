@@ -26,8 +26,9 @@ public class EnemyController : Character
     private float stoppingDistance;
     private Color originalEnemyColor;
 
-    private static float knockBackDuration = 0.2f;
-    private int millisecondsPerSecond = 1000;
+    private static float knockBackDuration = 2f;
+    private static float recoverySpeedFromKnockBack = 3f;
+    private static int milliseconds = 100;
     private Color enemyColorOnHit = new Color(205f, 0f, 0f);
 
     private void Awake()
@@ -114,22 +115,28 @@ public class EnemyController : Character
         Vector2 knockBackDirection = transform.position - playerTransform.position;
         rb.AddForce(knockBackDirection.normalized * knockBackForce, ForceMode2D.Impulse);
 
-        await Task.Delay((int)Math.Abs(knockBackDuration * millisecondsPerSecond));
+        await NullifyVelocities((int)Math.Abs(knockBackDuration * milliseconds));
 
-        NullifyVelocities();
         currentEnemySpeed = MaxSpeed;
         enemySpriteRenderer.color = originalEnemyColor;
         isInKnockBack = false;
     }
-    private void OnCollisionExit2D(Collision2D collision)
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        currentEnemySpeed = 0f;
+    }
+    private async void OnCollisionExit2D(Collision2D collision)
     {
         //When enemies collide into one another during knockback,
         //they start to gain velocity, which is undesired behaviour.
         //This did not work with OnCollisionEnter2D for some reason.
-        NullifyVelocities();
+        await NullifyVelocities((int)Math.Abs(knockBackDuration * milliseconds));
+        currentEnemySpeed = MaxSpeed;
     }
-    private void NullifyVelocities()
+    private async Task NullifyVelocities(int milliseconds)
     {
+        await Task.Delay(milliseconds);
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
     }
