@@ -20,6 +20,4 @@ public class SinusoidalMovement : EnemyMovement
         horizontalMovement.y += Mathf.Sin(Time.time * 5f) * 2f * Time.deltaTime;
         enemyTransform.position += horizontalMovement;
     }
-    
-    private Vector3 GetPerpendicularVector(Vector3 vector) => new Vector3(-vector.y, vector.x, 0f);
 }
