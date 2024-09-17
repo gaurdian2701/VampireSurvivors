@@ -26,13 +26,22 @@ public class EnemySpawnService
             SpawnEnemy(EnemyClass.MERMAN);
             SpawnEnemy(EnemyClass.RAVEN);
         }
-
-        ListenToEvents();
+        SubscribeToEvents();
+    }
+    
+    ~EnemySpawnService()
+    {
+        UnsubscribeFromEvents();
     }
 
-    private void ListenToEvents()
+    private void SubscribeToEvents()
     {
         GameManager.Instance.EventService.OnEnemyDied += OnEnemyDiedListener;
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        GameManager.Instance.EventService.OnEnemyDied -= OnEnemyDiedListener;
     }
 
     private void OnEnemyDiedListener(EnemyClass enemyClass)
@@ -73,7 +82,7 @@ public class EnemySpawnService
     private void SpawnHorde(EnemyClass enemyClass)
     {
         currentKillCountForHorde = 0;
-        currentNumberOfKillsToInitiateHorde = 5;
+        currentNumberOfKillsToInitiateHorde += 5;
         for (int i = 0; i < numberOfEnemiesInHorde; i++)
         {
             GetEnemyFromPool(enemyClass);
