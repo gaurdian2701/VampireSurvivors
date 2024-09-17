@@ -12,7 +12,7 @@ public class EnemyPool : GenericObjectPool<EnemyController>
         this.maxObjectsInPool = maxObjectsInPool;
     }
 
-    public EnemyController GetEnemyFromPool()
+    public EnemyController GetEnemyFromPool() 
     {
         return GetObjectFromPool();
     }

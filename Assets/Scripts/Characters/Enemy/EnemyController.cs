@@ -37,8 +37,8 @@ public class EnemyController : Character
         Init(enemyData.MaxHealth, enemyData.EnemySpeed);
         enemySpeedModifier = enemyData.EnemySpeedModifier;
         stoppingDistance = enemyData.StoppingDistance;
-        playerTransform = GameManager.Instance.Player.transform;
-        playerBodyTransform = GameManager.Instance.Player.GetPlayerBodyTransform();
+        playerTransform = GameManager.Instance.PlayerController.transform;
+        playerBodyTransform = GameManager.Instance.PlayerController.GetPlayerBodyTransform();
         LoadMovementController(enemyData.EnemyMovementType);
     }
 

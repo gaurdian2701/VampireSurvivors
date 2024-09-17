@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
-public class PlayerController : Character
+public class PlayerController : Character, IPausable
 {
     [SerializeField] private int maxHealth;
     [SerializeField] private float movementSpeed;
@@ -14,6 +14,7 @@ public class PlayerController : Character
     private Vector3 movementVector;
     private Weapon currentMeleeWeapon;
     private bool attackingWithMeleeWeapon;
+    private bool playerPaused = false;
 
     private void Awake()
     {
@@ -35,6 +36,7 @@ public class PlayerController : Character
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {
+        if (playerPaused) return;
         Vector2 playerInput = ctx.ReadValue<Vector2>();
         movementVector = new Vector3(playerInput.x, playerInput.y, 0f) * movementSpeed;
         ChangeDirection(playerInput.x);
@@ -65,8 +67,13 @@ public class PlayerController : Character
             currentMeleeWeapon.Attack();
     }
 
-    public override void TakeDamage(int someDamage, float knockBackForce)
+    public void Pause()
     {
-        base.TakeDamage(someDamage, knockBackForce);
+        playerPaused = true;
+    }
+
+    public void Resume()
+    {
+        playerPaused = false;
     }
 }

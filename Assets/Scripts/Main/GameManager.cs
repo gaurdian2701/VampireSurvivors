@@ -1,20 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
     public static GameManager Instance { get { return instance; } }
 
-    public PlayerController Player;
-    public EventService EventService;
-    public ObjectPoolingService ObjectPoolingService;
-
     [SerializeField] private EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject;
     [SerializeField] private ObjectPoolServiceScriptableObject objectPoolServiceScriptableObject;
-
+    
+    [FormerlySerializedAs("Player")] public PlayerController PlayerController;
+    public EventService EventService;
+    public ObjectPoolingService ObjectPoolingService;
+    
+    
     private EnemySpawnService enemySpawnService;
+    private GameStateMachine gameStateMachine;
+    private GameState currentGameState;
 
     private void Awake()
     {
@@ -34,10 +39,17 @@ public class GameManager : MonoBehaviour
     {
         EventService = new EventService();
         ObjectPoolingService = new ObjectPoolingService(objectPoolServiceScriptableObject);
+        enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
+        gameStateMachine = new GameStateMachine(enemySpawnService, PlayerController);
     }
 
     private void Start()
     {
-        enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
+        EventService.InvokeGameEnteredPlayStateEvent();
+    }
+
+    private void Update()
+    {
+        gameStateMachine.UpdateStateMachine();
     }
 }

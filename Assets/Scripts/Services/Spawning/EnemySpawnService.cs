@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySpawnService
+public class EnemySpawnService : IPausable
 {
     private EnemyController enemyToBeSpawned;
     private Transform playerTransform;
@@ -18,7 +18,7 @@ public class EnemySpawnService
         startingNumberOfEnemies = enemySpawnServiceScriptableObject.StartingNumberOfEnemies;
         numberOfEnemiesInHorde = enemySpawnServiceScriptableObject.NumberOfEnemiesInHorde;
         currentNumberOfKillsToInitiateHorde = enemySpawnServiceScriptableObject.StartingNumberOfKillsToInitiateHorde;
-        playerTransform = GameManager.Instance.Player.transform;
+        playerTransform = GameManager.Instance.PlayerController.transform;
         currentKillCountForHorde = 0;
 
         for (int i = 0; i < startingNumberOfEnemies; i++)
@@ -99,5 +99,15 @@ public class EnemySpawnService
         //Then multiply it by some radius to get it out of player view
         Vector2 enemySpawnPoint = playerTransform.position.normalized + pointAroundCircle;
         return enemySpawnPoint;
+    }
+
+    public void Pause()
+    {
+        UnsubscribeFromEvents();
+    }
+
+    public void Resume()
+    {
+        SubscribeToEvents();
     }
 }
