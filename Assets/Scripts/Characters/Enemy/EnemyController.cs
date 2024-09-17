@@ -20,6 +20,7 @@ public class EnemyController : Character
     private Transform playerTransform;
     private Transform playerBodyTransform;
     private bool isInKnockBack = false;
+    private bool objectIsDisabled = false;
     
     private float enemySpeedModifier;
     private float stoppingDistance;
@@ -69,6 +70,12 @@ public class EnemyController : Character
         animator.enabled = false;
         bloodSplatterSpriteRenderer.enabled = false;
         enemySpriteRenderer.enabled = true;
+        objectIsDisabled = false;
+    }
+
+    private void OnDisable()
+    {
+        objectIsDisabled = true;
     }
 
     private void Update()
@@ -143,6 +150,10 @@ public class EnemyController : Character
     private async Task NullifyVelocities(int millisecs)
     {
         await Task.Delay(millisecs);
+
+        if (objectIsDisabled)
+            return;
+
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
     }
@@ -159,7 +170,20 @@ public class EnemyController : Character
     public void OnDied()
     {
         GameManager.Instance.EventService.InvokeEnemyDiedEvent(enemyData.EnemyClass);
-        GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.ReturnObjectToPool(this);
+        ReturnEnemyToPool(enemyData.EnemyClass);
         gameObject.SetActive(false);
+    }
+
+    private void ReturnEnemyToPool(EnemyClass enemyClass)
+    {
+        switch (enemyClass)
+        {
+            case EnemyClass.MERMAN :
+                GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.ReturnObjectToPool(this);
+                break;
+            case EnemyClass.RAVEN :
+                GameManager.Instance.ObjectPoolingService.Raven_EnemyPool.ReturnObjectToPool(this);
+                break;
+        }
     }
 }

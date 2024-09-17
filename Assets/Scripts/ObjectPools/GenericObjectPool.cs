@@ -7,7 +7,7 @@ public class GenericObjectPool<T> where T : class
     protected int maxObjectsInPool;
     private List<PooledObject<T>> pooledObjects = new List<PooledObject<T>>();
 
-    public virtual T GetObjectFromPool()
+    protected virtual T GetObjectFromPool()
     {
         if (pooledObjects.Count > 0)
         {

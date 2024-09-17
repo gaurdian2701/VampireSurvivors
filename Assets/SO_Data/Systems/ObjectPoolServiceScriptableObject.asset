@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Merman_EnemyPrefab: {fileID: 5201406064040359947, guid: b83fb5ccf17fa5a4fbd804d18c9f3468, type: 3}
   Raven_EnemyPrefab: {fileID: 5201406064040359947, guid: 090dfefb23c28a649aabafb53e48f3b0, type: 3}
-  MaxEnemies: 30
+  MaxEnemies: 100

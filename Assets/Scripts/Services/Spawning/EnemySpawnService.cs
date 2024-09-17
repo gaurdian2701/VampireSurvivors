@@ -49,7 +49,7 @@ public class EnemySpawnService
         switch (enemyClass)
         {
             case EnemyClass.MERMAN :
-                enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.GetObjectFromPool();
+                enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.GetEnemyFromPool();
                 break;
             
             case EnemyClass.RAVEN:
