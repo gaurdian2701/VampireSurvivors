@@ -14,7 +14,7 @@ public class PlayerController : Character, IPausable
     private Vector3 movementVector;
     private Weapon currentMeleeWeapon;
     private bool attackingWithMeleeWeapon;
-    private bool playerPaused = false;
+    private bool playerPaused;
 
     private void Awake()
     {
@@ -33,6 +33,16 @@ public class PlayerController : Character, IPausable
         MovePlayer();
         AttackWithMeleeWeapon();
     }
+    
+    public void Pause()
+    {
+        playerPaused = true;
+    }
+
+    public void Resume()
+    {
+        playerPaused = false;
+    }
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {
@@ -45,11 +55,17 @@ public class PlayerController : Character, IPausable
     public Transform GetPlayerBodyTransform() => playerBodyTransform;
 
     public void GetPlayerMeleeAttackInput(InputAction.CallbackContext ctx)
-    {    
+    {
         if(ctx.ReadValue<float>() > 0f)
             attackingWithMeleeWeapon = true;
         else
             attackingWithMeleeWeapon = false;
+    }
+
+    public override void TakeDamage(int damageTaken)
+    {
+        base.TakeDamage(damageTaken);
+        GameManager.Instance.EventService.InvokePlayerTookDamageEvent(damageTaken);
     }
 
     private void ChangeDirection(float input)
@@ -63,17 +79,7 @@ public class PlayerController : Character, IPausable
     private void MovePlayer() => transform.position += movementVector * Time.deltaTime;
     private void AttackWithMeleeWeapon()
     {
-        if (attackingWithMeleeWeapon)
+        if (attackingWithMeleeWeapon && !playerPaused)
             currentMeleeWeapon.Attack();
-    }
-
-    public void Pause()
-    {
-        playerPaused = true;
-    }
-
-    public void Resume()
-    {
-        playerPaused = false;
     }
 }

@@ -14,5 +14,11 @@ public class Character : MonoBehaviour
     {
         HealthController.DecreaseHealth(someDamage);
     }
+
+    public virtual void TakeDamage(int someDamage)
+    {
+        HealthController.DecreaseHealth(someDamage);
+    }
+
     public virtual void Die() { }
 }

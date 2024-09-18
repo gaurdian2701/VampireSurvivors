@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateMachine
+public class StateMachine : MonoBehaviour
 {
-    protected List<State> states;
+    public List<State> states;
     protected State currentState;
     protected virtual void AddStates(EnemySpawnService enemySpawnService, PlayerController playerController){}
 

@@ -4,22 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviour
+public class GameManager : StateMachine
 {
     private static GameManager instance;
     public static GameManager Instance { get { return instance; } }
-
+    
+    [Header("Scriptable Objects")]
     [SerializeField] private EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject;
     [SerializeField] private ObjectPoolServiceScriptableObject objectPoolServiceScriptableObject;
     
-    [FormerlySerializedAs("Player")] public PlayerController PlayerController;
+    [Header("Script References")]
+    [SerializeField] public PlayerController PlayerController;
+    [SerializeField] public UIService uiService;
+    
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;
     
     
     private EnemySpawnService enemySpawnService;
-    private GameStateMachine gameStateMachine;
-    private GameState currentGameState;
 
     private void Awake()
     {
@@ -34,13 +36,37 @@ public class GameManager : MonoBehaviour
         else
             Destroy(this);
     }
-
     private void InitializeServices()
     {
         EventService = new EventService();
         ObjectPoolingService = new ObjectPoolingService(objectPoolServiceScriptableObject);
         enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
-        gameStateMachine = new GameStateMachine(enemySpawnService, PlayerController);
+        uiService.Init();
+        SubscribeToEvents();
+        AddStates(enemySpawnService, PlayerController);
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromEvents();
+    }
+
+    private void SubscribeToEvents()
+    {
+        EventService.OnGameEnteredPlayState += SwitchState <PlayingState>;
+        EventService.OnGameEnteredPauseState += SwitchState <PausedState>;
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        EventService.OnGameEnteredPlayState -= SwitchState <PlayingState>;
+        EventService.OnGameEnteredPauseState -= SwitchState <PausedState>;
+    }
+    protected override void AddStates(EnemySpawnService enemySpawnService, PlayerController playerController)
+    {
+        states = new List<State>();
+        states.Add(new PlayingState(enemySpawnService, playerController));
+        states.Add(new PausedState(enemySpawnService, playerController));
     }
 
     private void Start()
@@ -50,6 +76,6 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        gameStateMachine.UpdateStateMachine();
+        UpdateStateMachine();
     }
 }

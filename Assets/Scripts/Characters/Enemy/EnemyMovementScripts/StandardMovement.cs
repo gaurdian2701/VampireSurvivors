@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class StandardMovement : EnemyMovement
 {
-    public StandardMovement(Transform playerTransform, Transform enemyTransform, float currentEnemySpeed, float enemySpeedModifier)
+    public StandardMovement(Transform playerTransform, Transform enemyTransform, float currentEnemySpeed)
     {
         this.playerTransform = playerTransform;
         this.enemyTransform = enemyTransform;
         SetCurrentEnemySpeed(currentEnemySpeed);
-        SetEnemySpeedModifier(enemySpeedModifier);
     }
 
     public override void UpdatePosition()

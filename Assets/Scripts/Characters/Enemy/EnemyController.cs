@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using System.Threading.Tasks;
-public class EnemyController : Character
+public class EnemyController : Character, IPausable
 {
     [SerializeField] private EnemyScriptableObject enemyData;
 
@@ -19,16 +19,16 @@ public class EnemyController : Character
     
     private Transform playerTransform;
     private Transform playerBodyTransform;
-    private bool isInKnockBack = false;
-    private bool objectIsDisabled = false;
+    private bool isInKnockBack;
+    private bool objectIsDisabled;
+    private bool enemyPaused;
     
     private float enemySpeedModifier;
     private float stoppingDistance;
     private Color originalEnemyColor;
 
     
-    private static float knockBackDuration = 2f;
-    private static float recoverySpeedFromKnockBack = 3f;
+    private static float knockBackDuration = 2.5f;
     private static int milliseconds = 100;
     private static Color enemyColorOnHit = new Color(205f, 0f, 0f);
 
@@ -40,28 +40,12 @@ public class EnemyController : Character
         playerTransform = GameManager.Instance.PlayerController.transform;
         playerBodyTransform = GameManager.Instance.PlayerController.GetPlayerBodyTransform();
         LoadMovementController(enemyData.EnemyMovementType);
+        SubscribeToEvents();
     }
 
-    private void LoadMovementController(EnemyMovementType movementType)
+    private void OnDestroy()
     {
-        switch (movementType)
-        {
-            default:
-            case EnemyMovementType.STANDARD :
-                movementController = new StandardMovement(playerTransform, transform, MaxSpeed, enemySpeedModifier);
-                break;
-            
-            case EnemyMovementType.SINUSOIDAL:
-                movementController = new SinusoidalMovement(playerTransform, transform, MaxSpeed, enemySpeedModifier);
-                break;
-        }
-    }
-
-    private void Start()
-    {
-        originalEnemyColor = enemySpriteRenderer.color;
-        animator.enabled = false;
-        bloodSplatterSpriteRenderer.enabled = false;
+        UnsubscribeFromEvents();
     }
 
     private void OnEnable()
@@ -78,8 +62,49 @@ public class EnemyController : Character
         objectIsDisabled = true;
     }
 
+    private void SubscribeToEvents()
+    {
+        GameManager.Instance.EventService.OnGameEnteredPauseState += Pause;
+        GameManager.Instance.EventService.OnGameEnteredPlayState += Resume;
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        GameManager.Instance.EventService.OnGameEnteredPauseState -= Pause;
+        GameManager.Instance.EventService.OnGameEnteredPlayState -= Resume;
+    }
+
+    public void Pause() => enemyPaused = true;
+
+    public void Resume() => enemyPaused = false;
+
+    private void LoadMovementController(EnemyMovementType movementType)
+    {
+        switch (movementType)
+        {
+            default:
+            case EnemyMovementType.STANDARD :
+                movementController = new StandardMovement(playerTransform, transform, MaxSpeed);
+                break;
+            
+            case EnemyMovementType.SINUSOIDAL:
+                movementController = new SinusoidalMovement(playerTransform, transform, MaxSpeed);
+                break;
+        }
+    }
+
+    private void Start()
+    {
+        originalEnemyColor = enemySpriteRenderer.color;
+        animator.enabled = false;
+        bloodSplatterSpriteRenderer.enabled = false;
+    }
+
     private void Update()
     {
+        if (enemyPaused)
+            return;
+        
         MoveEnemy();
         UpdateSpriteDirection();
         CheckIfPlayerIsFacingEnemy();
