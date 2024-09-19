@@ -15,6 +15,10 @@ public class UIService : MonoBehaviour
     public void Init()
     {
         SubscribeToEvents();
+    }
+
+    private void Start()
+    {
         maxPlayerHealth = GameManager.Instance.PlayerController.GetPlayerMaxHealth();
     }
 
@@ -54,7 +58,6 @@ public class UIService : MonoBehaviour
 
     private void DecreaseHealth(int damage)
     {
-        Debug.Log((float) damage / maxPlayerHealth);
         playerHealthBar.fillAmount -= (float) damage / maxPlayerHealth;
     }
 }

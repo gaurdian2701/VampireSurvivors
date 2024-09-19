@@ -5,8 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 public class PlayerController : Character, IPausable
 {
-    [SerializeField] private int maxHealth;
-    [SerializeField] private float movementSpeed;
+    [SerializeField] private PlayerScriptableObject playerScriptableObject;
     [SerializeField] private Transform playerBodyTransform;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
     [SerializeField] private AxeController axeController;
@@ -15,13 +14,15 @@ public class PlayerController : Character, IPausable
     private Weapon currentMeleeWeapon;
     private bool attackingWithMeleeWeapon;
     private bool playerPaused;
+    private float currentSpeed;
 
     private void Awake()
     {
-        Init(maxHealth, movementSpeed); // SO for player to be made later
+        Init(playerScriptableObject.PlayerMaxHealth, playerScriptableObject.PlayerMovementSpeed); // SO for player to be made later
         axeController = Instantiate(axeController);
         axeController.InitializeWeaponPositionAndOrientation(transform, playerBodyTransform);
         currentMeleeWeapon = axeController;
+        currentSpeed = MaxSpeed;
     }
     private void Start()
     {
@@ -32,25 +33,27 @@ public class PlayerController : Character, IPausable
     {
         MovePlayer();
         AttackWithMeleeWeapon();
+        Debug.Log(movementVector);
     }
     
     public void Pause()
     {
         playerPaused = true;
+        currentSpeed = 0f;
     }
 
     public void Resume()
     {
-        playerPaused = false;
+        playerPaused = false; 
+        currentSpeed = MaxSpeed;
     }
-    
-    public int GetPlayerMaxHealth() => maxHealth;
+
+    public int GetPlayerMaxHealth() => HealthController.GetMaxHealth();
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {
-        if (playerPaused) return;
         Vector2 playerInput = ctx.ReadValue<Vector2>();
-        movementVector = new Vector3(playerInput.x, playerInput.y, 0f) * movementSpeed;
+        movementVector = new Vector3(playerInput.x, playerInput.y, 0f);
         ChangeDirection(playerInput.x);
     }
 
@@ -77,8 +80,8 @@ public class PlayerController : Character, IPausable
         else if (input < 0f)
             playerSpriteRenderer.flipX = false;
     }
-
-    private void MovePlayer() => transform.position += movementVector * Time.deltaTime;
+ 
+    private void MovePlayer() => transform.position += currentSpeed * Time.deltaTime * movementVector;
     private void AttackWithMeleeWeapon()
     {
         if (attackingWithMeleeWeapon && !playerPaused)
