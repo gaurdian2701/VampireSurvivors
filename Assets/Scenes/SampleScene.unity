@@ -5687,8 +5687,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 826380914179005766, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4188184569543368214, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4188184569543368214, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5644590451601104637, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
@@ -5698,6 +5706,10 @@ PrefabInstance:
     - target: {fileID: 6345712701412990177, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
       propertyPath: rotSpeed
       value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 6345712701412990177, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
+      propertyPath: maxHealth
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6345712701412990177, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
       propertyPath: movementSpeed

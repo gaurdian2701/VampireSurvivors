@@ -13,8 +13,7 @@ public class StandardMovement : EnemyMovement
 
     public override void UpdatePosition()
     {
-        DirectionToPlayer = playerTransform.position - enemyTransform.position;
-        DirectionToPlayer.z = 0;
+        GetDirectionToPlayerVector();
         enemyTransform.position += currentEnemySpeed * enemySpeedModifier * Time.deltaTime * DirectionToPlayer.normalized; 
     }
 }

@@ -43,7 +43,7 @@ public class GameManager : StateMachine
         enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
         uiService.Init();
         SubscribeToEvents();
-        AddStates(enemySpawnService, PlayerController);
+        AddStates();
     }
 
     private void OnDestroy()
@@ -62,11 +62,11 @@ public class GameManager : StateMachine
         EventService.OnGameEnteredPlayState -= SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState -= SwitchState <PausedState>;
     }
-    protected override void AddStates(EnemySpawnService enemySpawnService, PlayerController playerController)
+    protected override void AddStates()
     {
         states = new List<State>();
-        states.Add(new PlayingState(enemySpawnService, playerController));
-        states.Add(new PausedState(enemySpawnService, playerController));
+        states.Add(new PlayingState(enemySpawnService, PlayerController));
+        states.Add(new PausedState(enemySpawnService, PlayerController));
     }
 
     private void Start()

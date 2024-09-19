@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Merman
   m_EditorClassIdentifier: 
   MaxHealth: 6
+  Damage: 3
   EnemySpeed: 2
   EnemySpeedModifier: 1.8
   StoppingDistance: 1.2
   EnemyImage: {fileID: 21300000, guid: 77c04dc0f203dfb4b8850d6f088eae20, type: 3}
+  EnemyMovementType: 0
+  EnemyClass: 0

@@ -10,9 +10,12 @@ public class UIService : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private Image playerHealthBar;
 
+    private int maxPlayerHealth = 100;
+
     public void Init()
     {
         SubscribeToEvents();
+        maxPlayerHealth = GameManager.Instance.PlayerController.GetPlayerMaxHealth();
     }
 
     private void OnDestroy()
@@ -24,12 +27,14 @@ public class UIService : MonoBehaviour
     {
         GameManager.Instance.EventService.OnGameEnteredPauseState += OnGamePause;
         GameManager.Instance.EventService.OnGameEnteredPlayState += OnGameResume;
+        GameManager.Instance.EventService.OnPlayerTookDamage += DecreaseHealth;
     }
 
     private void UnsubscribeFromEvents()
     {
         GameManager.Instance.EventService.OnGameEnteredPauseState -= OnGamePause;
         GameManager.Instance.EventService.OnGameEnteredPlayState -= OnGameResume;
+        GameManager.Instance.EventService.OnPlayerTookDamage -= DecreaseHealth;
     }
 
     private void OnGamePause()
@@ -45,5 +50,11 @@ public class UIService : MonoBehaviour
     public void OnResumeButtonClicked()
     {
         GameManager.Instance.EventService.InvokeGameEnteredPlayStateEvent();
+    }
+
+    private void DecreaseHealth(int damage)
+    {
+        Debug.Log((float) damage / maxPlayerHealth);
+        playerHealthBar.fillAmount -= (float) damage / maxPlayerHealth;
     }
 }

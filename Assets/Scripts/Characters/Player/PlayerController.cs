@@ -43,6 +43,8 @@ public class PlayerController : Character, IPausable
     {
         playerPaused = false;
     }
+    
+    public int GetPlayerMaxHealth() => maxHealth;
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {

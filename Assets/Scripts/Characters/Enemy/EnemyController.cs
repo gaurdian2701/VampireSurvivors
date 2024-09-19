@@ -19,13 +19,17 @@ public class EnemyController : Character, IPausable
     
     private Transform playerTransform;
     private Transform playerBodyTransform;
+    
     private bool isInKnockBack;
     private bool objectIsDisabled;
+    private bool collidedWithPlayer;
     private bool enemyPaused;
     
     private float enemySpeedModifier;
     private float stoppingDistance;
+    private int enemyDamage;
     private Color originalEnemyColor;
+    private EnemyClass enemyClass;
 
     
     private static float knockBackDuration = 2.5f;
@@ -34,9 +38,11 @@ public class EnemyController : Character, IPausable
 
     private void Awake()
     {
-        Init(enemyData.MaxHealth, enemyData.EnemySpeed);
+        Init(enemyData.EnmeyMaxHealth, enemyData.EnemySpeed);
         enemySpeedModifier = enemyData.EnemySpeedModifier;
-        stoppingDistance = enemyData.StoppingDistance;
+        stoppingDistance = enemyData.EnemyStoppingDistance;
+        enemyDamage = enemyData.EnemyDamage;
+        enemyClass = enemyData.EnemyClass;
         playerTransform = GameManager.Instance.PlayerController.transform;
         playerBodyTransform = GameManager.Instance.PlayerController.GetPlayerBodyTransform();
         LoadMovementController(enemyData.EnemyMovementType);
@@ -83,7 +89,7 @@ public class EnemyController : Character, IPausable
         switch (movementType)
         {
             default:
-            case EnemyMovementType.STANDARD :
+            case EnemyMovementType.STANDARD:
                 movementController = new StandardMovement(playerTransform, transform, MaxSpeed);
                 break;
             
@@ -172,6 +178,22 @@ public class EnemyController : Character, IPausable
         await NullifyVelocities((int)Math.Abs(knockBackDuration * milliseconds));
         movementController.SetCurrentEnemySpeed(MaxSpeed);
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !collidedWithPlayer)
+        {
+            GameManager.Instance.EventService.InvokePlayerTookDamageEvent(enemyDamage);
+            collidedWithPlayer = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if(other.CompareTag("Player"))
+            collidedWithPlayer = false;
+    }
+
     private async Task NullifyVelocities(int millisecs)
     {
         await Task.Delay(millisecs);
@@ -194,8 +216,8 @@ public class EnemyController : Character, IPausable
 
     public void OnDied()
     {
-        GameManager.Instance.EventService.InvokeEnemyDiedEvent(enemyData.EnemyClass);
-        ReturnEnemyToPool(enemyData.EnemyClass);
+        GameManager.Instance.EventService.InvokeEnemyDiedEvent(enemyClass);
+        ReturnEnemyToPool(enemyClass);
         gameObject.SetActive(false);
     }
 

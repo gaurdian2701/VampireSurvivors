@@ -6,7 +6,7 @@ public class StateMachine : MonoBehaviour
 {
     public List<State> states;
     protected State currentState;
-    protected virtual void AddStates(EnemySpawnService enemySpawnService, PlayerController playerController){}
+    protected virtual void AddStates(){}
 
     public void UpdateStateMachine()
     {

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Raven
   m_EditorClassIdentifier: 
   MaxHealth: 3
+  Damage: 1
   EnemySpeed: 3
   EnemySpeedModifier: 1.2
   StoppingDistance: 0.5

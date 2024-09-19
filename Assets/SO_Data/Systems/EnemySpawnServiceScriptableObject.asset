@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e7ea321f49ccd4e905953eba37b7e9, type: 3}
   m_Name: EnemySpawnServiceScriptableObject
   m_EditorClassIdentifier: 
-  StartingNumberOfEnemies: 6
+  StartingNumberOfEnemies: 5
   NumberOfEnemiesInHorde: 10
-  StartingNumberOfKillsToInitiateHorde: 10
+  StartingNumberOfKillsToInitiateHorde: 25
