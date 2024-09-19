@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
 
@@ -9,17 +10,24 @@ public class UIService : MonoBehaviour
 {
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private Image playerHealthBar;
+    [SerializeField] private Image playerXpBar;
+    [FormerlySerializedAs("playerXpText")] [SerializeField] private TextMeshProUGUI playerXpLevelText;
 
-    private int maxPlayerHealth = 100;
+    private int currentMaxPlayerHealth;
+    private int currentXpToNextLevel;
+    private int currentPlayerLevel;
 
     public void Init()
     {
         SubscribeToEvents();
+        playerXpBar.fillAmount = 0f;
+        currentPlayerLevel = 1;
     }
 
     private void Start()
     {
-        maxPlayerHealth = GameManager.Instance.PlayerController.GetPlayerMaxHealth();
+        currentMaxPlayerHealth = GameManager.Instance.PlayerController.GetPlayerMaxHealth();
+        currentXpToNextLevel = GameManager.Instance.PlayerController.GetCurrentXpToNextLevel();
     }
 
     private void OnDestroy()
@@ -32,6 +40,8 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.OnGameEnteredPauseState += OnGamePause;
         GameManager.Instance.EventService.OnGameEnteredPlayState += OnGameResume;
         GameManager.Instance.EventService.OnPlayerTookDamage += DecreaseHealth;
+        GameManager.Instance.EventService.OnPlayerPickedUpXp += IncreaseXp;
+        GameManager.Instance.EventService.OnPlayerLevelledUp += UpdatePlayerLevelUI;
     }
 
     private void UnsubscribeFromEvents()
@@ -39,6 +49,8 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.OnGameEnteredPauseState -= OnGamePause;
         GameManager.Instance.EventService.OnGameEnteredPlayState -= OnGameResume;
         GameManager.Instance.EventService.OnPlayerTookDamage -= DecreaseHealth;
+        GameManager.Instance.EventService.OnPlayerPickedUpXp -= IncreaseXp;
+        GameManager.Instance.EventService.OnPlayerLevelledUp -= UpdatePlayerLevelUI;
     }
 
     private void OnGamePause()
@@ -56,8 +68,14 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.InvokeGameEnteredPlayStateEvent();
     }
 
-    private void DecreaseHealth(int damage)
+    private void DecreaseHealth(int damage) => playerHealthBar.fillAmount -= (float) damage / currentMaxPlayerHealth;
+    
+    private void IncreaseXp() => playerXpBar.fillAmount += (float) currentXpToNextLevel / currentMaxPlayerHealth;
+
+    private void UpdatePlayerLevelUI()
     {
-        playerHealthBar.fillAmount -= (float) damage / maxPlayerHealth;
+        currentPlayerLevel += 1;
+        playerXpBar.fillAmount = 0f;
+        playerXpLevelText.text = $"{currentPlayerLevel}";
     }
 }

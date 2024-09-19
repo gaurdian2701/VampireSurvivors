@@ -46,7 +46,7 @@ public class EnemySpawnService : IPausable
 
     private void OnEnemyDiedListener(Vector3 enemyPosition) //CHANGE THIS TO SPAWN RANDOM ENEMIES INSTEAD OF HAVING TO GET ENEMY CLASS FROM EVENT LISTENER
     {
-        int classToSpawn = Random.Range((int)EnemyClass.MERMAN, (int)EnemyClass.RAVEN);
+        int classToSpawn = Random.Range((int)EnemyClass.MERMAN, (int)EnemyClass.RAVEN + 1);
         currentKillCountForHorde++;
         if (currentKillCountForHorde <= currentNumberOfKillsToInitiateHorde)  
             SpawnEnemy((EnemyClass)classToSpawn);

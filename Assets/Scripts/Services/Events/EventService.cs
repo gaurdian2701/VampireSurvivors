@@ -9,15 +9,18 @@ public class EventService
     public delegate void OnGameEnteredPauseStateDelegate();
     public delegate void OnPlayerTookDamageDelegate(int damage);
     public delegate void OnPlayerPickedUpXpDelegate();
+    public delegate void OnPlayerLevelledUpDelegate();
 
     public event OnEnemyDiedDelegate OnEnemyDied;
     public event OnGameEnteredPlayStateDelegate OnGameEnteredPlayState;
     public event OnGameEnteredPauseStateDelegate OnGameEnteredPauseState;
     public event OnPlayerTookDamageDelegate OnPlayerTookDamage;
     public event OnPlayerPickedUpXpDelegate OnPlayerPickedUpXp;
+    public event OnPlayerLevelledUpDelegate OnPlayerLevelledUp;
     public void InvokeEnemyDiedEvent(Vector3 enemyDeathLocation) => OnEnemyDied?.Invoke(enemyDeathLocation);
     public void InvokeGameEnteredPlayStateEvent() => OnGameEnteredPlayState?.Invoke();
     public void InvokeGameEnteredPauseStateEvent() => OnGameEnteredPauseState?.Invoke();
     public void InvokePlayerTookDamageEvent(int damage) => OnPlayerTookDamage?.Invoke(damage);
     public void InvokePlayerPickedUpXpEvent() => OnPlayerPickedUpXp?.Invoke();
+    public void InvokePLayerLevelledUpEvent() => OnPlayerLevelledUp?.Invoke();
 }

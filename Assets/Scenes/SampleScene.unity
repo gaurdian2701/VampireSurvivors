@@ -5757,6 +5757,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pausePanel: {fileID: 868157438}
   playerHealthBar: {fileID: 1730977890}
+  playerXpBar: {fileID: 1442009246}
+  playerXpLevelText: {fileID: 1985377164}
 --- !u!1 &1985377162
 GameObject:
   m_ObjectHideFlags: 0
@@ -5791,8 +5793,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 891.1, y: -383.6}
-  m_SizeDelta: {x: 27.0747, y: 50}
+  m_AnchoredPosition: {x: 892.1321, y: -383.6}
+  m_SizeDelta: {x: 74.5517, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1985377164
 MonoBehaviour:
@@ -6003,6 +6005,10 @@ PrefabInstance:
       propertyPath: movementSpeed
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 6345712701412990177, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
+      propertyPath: playerXpControllerScriptableObject
+      value: 
+      objectReference: {fileID: 11400000, guid: 82a97b99078f5e14aacf6ad16a5d063c, type: 2}
     - target: {fileID: 6413815796714793681, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.83

@@ -15,8 +15,8 @@ public class GameManager : StateMachine
     [SerializeField] private PickupServiceScriptableObject pickupServiceScriptableObject;
     
     [Header("Script References")]
-    [SerializeField] public PlayerController PlayerController;
-    [SerializeField] public UIService uiService;
+    public PlayerController PlayerController;
+    public UIService uiService;
     
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;
@@ -29,6 +29,8 @@ public class GameManager : StateMachine
     {
         Init();
         InitializeServices();
+        SubscribeToEvents();
+        AddStates();
     }
 
     private void Init()
@@ -45,8 +47,6 @@ public class GameManager : StateMachine
         enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
         pickupSpawnService = new PickupSpawnService();
         uiService.Init();
-        SubscribeToEvents();
-        AddStates();
     }
 
     private void OnDestroy()

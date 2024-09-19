@@ -6,10 +6,12 @@ using UnityEngine;
 public class PlayerController : Character, IPausable
 {
     [SerializeField] private PlayerScriptableObject playerScriptableObject;
+    [SerializeField] private PlayerXpControllerScriptableObject playerXpControllerScriptableObject;
     [SerializeField] private Transform playerBodyTransform;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
     [SerializeField] private AxeController axeController;
 
+    private PlayerXpController playerXpController;
     private Vector3 movementVector;
     private Weapon currentMeleeWeapon;
     private bool attackingWithMeleeWeapon;
@@ -18,7 +20,8 @@ public class PlayerController : Character, IPausable
 
     private void Awake()
     {
-        Init(playerScriptableObject.PlayerMaxHealth, playerScriptableObject.PlayerMovementSpeed); // SO for player to be made later
+        Init(playerScriptableObject.PlayerMaxHealth, playerScriptableObject.PlayerMovementSpeed);
+        playerXpController = new PlayerXpController(playerXpControllerScriptableObject);
         axeController = Instantiate(axeController);
         axeController.InitializeWeaponPositionAndOrientation(transform, playerBodyTransform);
         currentMeleeWeapon = axeController;
@@ -48,6 +51,7 @@ public class PlayerController : Character, IPausable
     }
 
     public int GetPlayerMaxHealth() => HealthController.GetMaxHealth();
+    public int GetCurrentXpToNextLevel() => playerXpController.currentXpToNextLevel;
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {
@@ -94,6 +98,7 @@ public class PlayerController : Character, IPausable
             GameObject xp = other.gameObject;
             xp.gameObject.SetActive(false);
             GameManager.Instance.ObjectPoolingService.XpPool.ReturnObjectToPool(xp);
+            GameManager.Instance.EventService.InvokePlayerPickedUpXpEvent();
         }
     }
 }
