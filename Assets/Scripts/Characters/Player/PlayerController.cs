@@ -33,7 +33,6 @@ public class PlayerController : Character, IPausable
     {
         MovePlayer();
         AttackWithMeleeWeapon();
-        Debug.Log(movementVector);
     }
     
     public void Pause()
@@ -86,5 +85,15 @@ public class PlayerController : Character, IPausable
     {
         if (attackingWithMeleeWeapon && !playerPaused)
             currentMeleeWeapon.Attack();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Pickup"))
+        {
+            GameObject xp = other.gameObject;
+            xp.gameObject.SetActive(false);
+            GameManager.Instance.ObjectPoolingService.XpPool.ReturnObjectToPool(xp);
+        }
     }
 }

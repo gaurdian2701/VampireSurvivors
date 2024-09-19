@@ -12,6 +12,7 @@ public class GameManager : StateMachine
     [Header("Scriptable Objects")]
     [SerializeField] private EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject;
     [SerializeField] private ObjectPoolServiceScriptableObject objectPoolServiceScriptableObject;
+    [SerializeField] private PickupServiceScriptableObject pickupServiceScriptableObject;
     
     [Header("Script References")]
     [SerializeField] public PlayerController PlayerController;
@@ -22,6 +23,7 @@ public class GameManager : StateMachine
     
     
     private EnemySpawnService enemySpawnService;
+    private PickupSpawnService pickupSpawnService;
 
     private void Awake()
     {
@@ -41,6 +43,7 @@ public class GameManager : StateMachine
         EventService = new EventService();
         ObjectPoolingService = new ObjectPoolingService(objectPoolServiceScriptableObject);
         enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
+        pickupSpawnService = new PickupSpawnService();
         uiService.Init();
         SubscribeToEvents();
         AddStates();
@@ -51,13 +54,13 @@ public class GameManager : StateMachine
         UnsubscribeFromEvents();
     }
 
-    private void SubscribeToEvents()
+    public void SubscribeToEvents()
     {
         EventService.OnGameEnteredPlayState += SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState += SwitchState <PausedState>;
     }
 
-    private void UnsubscribeFromEvents()
+    public void UnsubscribeFromEvents()
     {
         EventService.OnGameEnteredPlayState -= SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState -= SwitchState <PausedState>;

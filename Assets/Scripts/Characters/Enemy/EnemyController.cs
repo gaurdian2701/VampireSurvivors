@@ -205,18 +205,16 @@ public class EnemyController : Character, IPausable
         rb.angularVelocity = 0f;
     }
 
-    public override void Die() => InitiateDeathAnimation();
-
-    private void InitiateDeathAnimation()
+    public override void Die()
     {
         animator.enabled = true;
         bloodSplatterSpriteRenderer.enabled = true;
-        enemySpriteRenderer.enabled = false;    
+        enemySpriteRenderer.enabled = false; 
+        GameManager.Instance.EventService.InvokeEnemyDiedEvent(transform.position);
     }
 
     public void OnDied()
     {
-        GameManager.Instance.EventService.InvokeEnemyDiedEvent(enemyClass);
         ReturnEnemyToPool(enemyClass);
         gameObject.SetActive(false);
     }

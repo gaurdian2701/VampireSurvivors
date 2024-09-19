@@ -8,4 +8,6 @@ public class ObjectPoolServiceScriptableObject : ScriptableObject
     public EnemyController Merman_EnemyPrefab;
     public EnemyController Raven_EnemyPrefab;
     public int MaxEnemies;
+    public GameObject XpPrefab;
+    public int MaxXps;
 }

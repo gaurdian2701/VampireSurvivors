@@ -44,13 +44,14 @@ public class EnemySpawnService : IPausable
         GameManager.Instance.EventService.OnEnemyDied -= OnEnemyDiedListener;
     }
 
-    private void OnEnemyDiedListener(EnemyClass enemyClass)
+    private void OnEnemyDiedListener(Vector3 enemyPosition) //CHANGE THIS TO SPAWN RANDOM ENEMIES INSTEAD OF HAVING TO GET ENEMY CLASS FROM EVENT LISTENER
     {
+        int classToSpawn = Random.Range((int)EnemyClass.MERMAN, (int)EnemyClass.RAVEN);
         currentKillCountForHorde++;
         if (currentKillCountForHorde <= currentNumberOfKillsToInitiateHorde)  
-            SpawnEnemy(enemyClass);
+            SpawnEnemy((EnemyClass)classToSpawn);
         else
-            SpawnHorde(enemyClass);
+            SpawnHorde((EnemyClass)classToSpawn);
     }
 
     private void GetEnemyFromPool(EnemyClass enemyClass)
