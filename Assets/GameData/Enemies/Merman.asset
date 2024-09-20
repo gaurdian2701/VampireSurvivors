@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81eac7fc4d560e94ab1f28db2efd0516, type: 3}
   m_Name: Merman
   m_EditorClassIdentifier: 
-  MaxHealth: 6
-  Damage: 3
-  EnemySpeed: 2
-  EnemySpeedModifier: 1.8
-  StoppingDistance: 1.2
+  EnmeyMaxHealth: 4
+  EnemyDamage: 3
+  EnemySpeed: 1
+  EnemySpeedModifier: 1.3
+  EnemyStoppingDistance: 1.2
   EnemyImage: {fileID: 21300000, guid: 77c04dc0f203dfb4b8850d6f088eae20, type: 3}
   EnemyMovementType: 0
   EnemyClass: 0

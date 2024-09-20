@@ -17,10 +17,8 @@ public class GameManager : StateMachine
     [Header("Script References")]
     public PlayerController PlayerController;
     public UIService uiService;
-    
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;
-    
     
     private EnemySpawnService enemySpawnService;
     private PickupSpawnService pickupSpawnService;

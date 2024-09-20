@@ -9,11 +9,10 @@ public class PlayerController : Character, IPausable
     [SerializeField] private PlayerXpControllerScriptableObject playerXpControllerScriptableObject;
     [SerializeField] private Transform playerBodyTransform;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
-    [SerializeField] private AxeController axeController;
 
     private PlayerXpController playerXpController;
+    private EventService eventService;
     private Vector3 movementVector;
-    private Weapon currentMeleeWeapon;
     private bool attackingWithMeleeWeapon;
     private bool playerPaused;
     private float currentSpeed;
@@ -22,14 +21,12 @@ public class PlayerController : Character, IPausable
     {
         Init(playerScriptableObject.PlayerMaxHealth, playerScriptableObject.PlayerMovementSpeed);
         playerXpController = new PlayerXpController(playerXpControllerScriptableObject);
-        axeController = Instantiate(axeController);
-        axeController.InitializeWeaponPositionAndOrientation(transform, playerBodyTransform);
-        currentMeleeWeapon = axeController;
         currentSpeed = MaxSpeed;
     }
     private void Start()
     {
         attackingWithMeleeWeapon = false;
+        eventService = GameManager.Instance.EventService;
     }
 
     private void Update()
@@ -64,8 +61,10 @@ public class PlayerController : Character, IPausable
 
     public void GetPlayerMeleeAttackInput(InputAction.CallbackContext ctx)
     {
-        if(ctx.ReadValue<float>() > 0f)
+        if (ctx.ReadValue<float>() > 0f)
+        {
             attackingWithMeleeWeapon = true;
+        }
         else
             attackingWithMeleeWeapon = false;
     }
@@ -88,7 +87,7 @@ public class PlayerController : Character, IPausable
     private void AttackWithMeleeWeapon()
     {
         if (attackingWithMeleeWeapon && !playerPaused)
-            currentMeleeWeapon.Attack();
+            eventService.InvokePlayerPressedAttackButtonEvent();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
