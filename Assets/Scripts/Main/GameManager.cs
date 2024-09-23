@@ -22,6 +22,7 @@ public class GameManager : StateMachine
     
     private EnemySpawnService enemySpawnService;
     private PickupSpawnService pickupSpawnService;
+    public GamePauseType currentGamePauseType { get; private set; }
 
     private void Awake()
     {
@@ -52,13 +53,13 @@ public class GameManager : StateMachine
         UnsubscribeFromEvents();
     }
 
-    public void SubscribeToEvents()
+    private void SubscribeToEvents()
     {
         EventService.OnGameEnteredPlayState += SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState += SwitchState <PausedState>;
     }
 
-    public void UnsubscribeFromEvents()
+    private void UnsubscribeFromEvents()
     {
         EventService.OnGameEnteredPlayState -= SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState -= SwitchState <PausedState>;
@@ -66,8 +67,8 @@ public class GameManager : StateMachine
     protected override void AddStates()
     {
         states = new List<State>();
-        states.Add(new PlayingState(enemySpawnService, PlayerController));
-        states.Add(new PausedState(enemySpawnService, PlayerController));
+        states.Add(new PlayingState(enemySpawnService, PlayerController, this));
+        states.Add(new PausedState(enemySpawnService, PlayerController, this));
     }
 
     private void Start()
@@ -79,4 +80,6 @@ public class GameManager : StateMachine
     {
         UpdateStateMachine();
     }
+    
+    public void ChangeGamePauseType(GamePauseType gamePauseType) => currentGamePauseType = gamePauseType;
 }

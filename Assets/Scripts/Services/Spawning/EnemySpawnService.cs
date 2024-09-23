@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemySpawnService : IPausable
 {
@@ -12,6 +14,7 @@ public class EnemySpawnService : IPausable
     private static float spawnCircleRadius = 15f;
     private static int currentNumberOfKillsToInitiateHorde;
     private int currentKillCountForHorde;
+    private int numberOEnemyTypes = Enum.GetNames(typeof(EnemyClass)).Length;
 
     public EnemySpawnService(EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject)
     {
@@ -46,7 +49,7 @@ public class EnemySpawnService : IPausable
 
     private void OnEnemyDiedListener(Vector3 enemyPosition) //CHANGE THIS TO SPAWN RANDOM ENEMIES INSTEAD OF HAVING TO GET ENEMY CLASS FROM EVENT LISTENER
     {
-        int classToSpawn = Random.Range((int)EnemyClass.MERMAN, (int)EnemyClass.RAVEN + 1);
+        int classToSpawn = Random.Range(0, numberOEnemyTypes);
         currentKillCountForHorde++;
         if (currentKillCountForHorde <= currentNumberOfKillsToInitiateHorde)  
             SpawnEnemy((EnemyClass)classToSpawn);

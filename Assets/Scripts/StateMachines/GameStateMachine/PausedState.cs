@@ -6,12 +6,16 @@ public class PausedState : State
 {
     private EnemySpawnService enemySpawnService;
     private PlayerController playerController;
+    private GameManager gameManager;
+    private bool pausedOnUpgrade;
 
     public PausedState(EnemySpawnService enemySpawnService,
-        PlayerController playerController)
+        PlayerController playerController,
+        GameManager gameManager)
     {
         this.enemySpawnService = enemySpawnService;
         this.playerController = playerController;
+        this.gameManager = gameManager;
     }
     public override void EnterState()
     {
@@ -21,8 +25,11 @@ public class PausedState : State
 
     public override void UpdateState()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
-            GameManager.Instance.EventService.InvokeGameEnteredPlayStateEvent();
+        if (Input.GetKeyDown(KeyCode.Escape) && gameManager.currentGamePauseType != GamePauseType.PauseOnPlayerLevelUp)
+        {
+            gameManager.ChangeGamePauseType(GamePauseType.PauseOnPlayerInput);
+            gameManager.EventService.InvokeGameEnteredPlayStateEvent();
+        }
     }
 
     public override void ExitState()
