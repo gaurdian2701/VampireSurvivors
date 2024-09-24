@@ -5122,7 +5122,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.54789734, y: 61.47223}
+  m_AnchoredPosition: {x: 0.5479126, y: 61.47223}
   m_SizeDelta: {x: -0.4231, y: -127.838}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &757356205
@@ -5515,7 +5515,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 850396449}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1791311791}
+        m_TargetAssemblyTypeName: UIService, Assembly-CSharp
+        m_MethodName: OnUpgradeChosen
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &850396449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5692,7 +5704,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.54810333, y: 61.47223}
+  m_AnchoredPosition: {x: -0.5480957, y: 61.47223}
   m_SizeDelta: {x: -0.4231, y: -127.838}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &908503548
@@ -6371,7 +6383,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0030975342, y: 61.47223}
+  m_AnchoredPosition: {x: 0.003112793, y: 61.47223}
   m_SizeDelta: {x: -0.4231, y: -127.838}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1201700540
@@ -6700,6 +6712,7 @@ MonoBehaviour:
   objectPoolServiceScriptableObject: {fileID: 11400000, guid: 805103fb2ece8fb4cbcc574211ec2f71, type: 2}
   pickupServiceScriptableObject: {fileID: 11400000, guid: 388464d70b83cf14a99a6a81f3bb5f33, type: 2}
   PlayerController: {fileID: 2848921975344159100}
+  PlayerWeaponController: {fileID: 2848921975344159104}
   uiService: {fileID: 1791311791}
 --- !u!4 &1513865591
 Transform:
@@ -6799,7 +6812,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1725132430}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1791311791}
+        m_TargetAssemblyTypeName: UIService, Assembly-CSharp
+        m_MethodName: OnUpgradeChosen
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1725132430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7475,7 +7500,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2133695923}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1791311791}
+        m_TargetAssemblyTypeName: UIService, Assembly-CSharp
+        m_MethodName: OnUpgradeChosen
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2133695923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7656,6 +7693,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e58874dca10c5949b6160f4e8a83f45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2848921975344159104 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1051148842431719380, guid: 24525ab9616a1c648a98a8b8fb6b7fb6, type: 3}
+  m_PrefabInstance: {fileID: 2848921975344159098}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b361610341878d4ea57a9922d732b56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807

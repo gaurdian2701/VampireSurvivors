@@ -16,6 +16,7 @@ public class GameManager : StateMachine
     
     [Header("Script References")]
     public PlayerController PlayerController;
+    public WeaponController PlayerWeaponController;
     public UIService uiService;
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;
@@ -57,12 +58,14 @@ public class GameManager : StateMachine
     {
         EventService.OnGameEnteredPlayState += SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState += SwitchState <PausedState>;
+        EventService.OnPlayerSelectedUpgrade += SwitchState<PlayingState>;
     }
 
     private void UnsubscribeFromEvents()
     {
         EventService.OnGameEnteredPlayState -= SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState -= SwitchState <PausedState>;
+        EventService.OnPlayerSelectedUpgrade -= SwitchState<PlayingState>;
     }
     protected override void AddStates()
     {

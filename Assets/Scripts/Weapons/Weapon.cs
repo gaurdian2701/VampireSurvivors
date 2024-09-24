@@ -12,15 +12,16 @@ public class Weapon : MonoBehaviour
     
     protected Transform playerBodyTransform;
     
-    private static int baseDamageIncreaseRate = 2;
-    private static float baseAttackSpeedIncreaseRate = 50f;
+    public readonly int baseDamageIncreaseRate = 2;
+    public readonly float baseAttackSpeedIncreaseRate = 50f;
+    public readonly float baseKnockBackForceIncreaseRate = 1f;
     public void InitWeaponData(WeaponScriptableObject weaponData)
     {
         BaseDamage = weaponData.Damage;
         BaseAttackSpeed = weaponData.AttackSpeed;
         BaseKnockBackForce = weaponData.KnockbackForce;
     }
-    
+
     public void InitializeWeaponPositionAndOrientation(Transform playerTransform, Transform playerBodyTransform,
         Vector3 weaponLocalPositionOffset)
     {
@@ -36,9 +37,7 @@ public class Weapon : MonoBehaviour
             enemy.TakeDamage(BaseDamage, BaseKnockBackForce);
     }
     public virtual void Attack() { }
-    
-    public void IncreaseNumberOfWeaponsToSpawn() => NumberOfWeaponsToSpawn++;
-    public void IncreaseBaseDamage() => BaseDamage += baseDamageIncreaseRate;
-    public void IncreaseBaseAttackSpeed() => BaseAttackSpeed += baseAttackSpeedIncreaseRate;
-    public void IncreaseBaseKnockBackForce() => BaseKnockBackForce++;
+    public void SetBaseDamage(int someDamage) => BaseDamage = someDamage;
+    public void SetBaseAttackSpeed(float someAttackSpeed) => BaseAttackSpeed = someAttackSpeed;
+    public void SetBaseKnockBackForce(float someKnockBackForce) => BaseKnockBackForce = someKnockBackForce;
 }

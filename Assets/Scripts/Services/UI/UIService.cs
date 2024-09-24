@@ -25,8 +25,8 @@ public class UIService : MonoBehaviour
     private int numberOfWeaponTypes = Enum.GetNames(typeof(WeaponType)).Length;
     private int numberOfUpgradeTypes = Enum.GetNames(typeof(UpgradeType)).Length;
 
-    private int[] weapons;
-    private int[] upgrades;
+    private int[] weaponsData;
+    private int[] upgradesData;
     
     private Random random = new Random();
 
@@ -42,13 +42,13 @@ public class UIService : MonoBehaviour
 
     private void FillUpgradeCaches()
     {
-        weapons = new int[numberOfWeaponTypes];
-        for (int i = 0; i < weapons.Length; i++)
-            weapons[i] = i;
+        weaponsData = new int[3];
+        for (int i = 0; i < weaponsData.Length; i++)
+            weaponsData[i] = 0;
         
-        upgrades = new int[numberOfUpgradeTypes];
-        for (int i = 0; i < upgrades.Length; i++)
-            upgrades[i] = i;
+        upgradesData = new int[numberOfUpgradeTypes];
+        for (int i = 0; i < upgradesData.Length; i++)
+            upgradesData[i] = i;
     }
 
     private void Start()
@@ -99,6 +99,7 @@ public class UIService : MonoBehaviour
     private void OnGameResume()
     {
         pausePanel.SetActive(false);
+        upgradesPanel.SetActive(false);
     }
 
     public void OnResumeButtonClicked()
@@ -120,26 +121,25 @@ public class UIService : MonoBehaviour
 
     private void GenerateUpgradesForPlayer()
     {
-        FillUpgradeText<WeaponType>(weaponToBeUpgradedTextList, weapons);
-        FillUpgradeText<UpgradeType>(upgradeTypeTextList, upgrades);
+        FillUpgradeText<WeaponType>(weaponToBeUpgradedTextList, weaponsData);
+        FillUpgradeText<UpgradeType>(upgradeTypeTextList, upgradesData);
     }
 
     private void FillUpgradeText<T>(List<TextMeshProUGUI> textList, int[] dataArray) where T : Enum
     {
-        ShuffleArray(dataArray);
+        ShuffleUpgradeData(dataArray);
         int i = 0, j = 0;
-        for (; i < textList.Count && j < dataArray.Length; i++, j++)
+
+        while (i < textList.Count)
+        {
             textList[i].text = Enum.GetName(typeof(T), dataArray[j]);
-        
-        if(i < textList.Count - 1)
-            while (i < textList.Count)
-            {
-                textList[i].text = Enum.GetName(typeof(T), dataArray[j-1]);
-                i++;
-            }
+            i++;
+            if (j < dataArray.Length - 1)
+                j++;
+        }
     }
     
-    private void ShuffleArray(int[] array)
+    private void ShuffleUpgradeData(int[] array)
     {
         Random random = new Random();
         for (int i = array.Length - 1; i > 0; i--)
@@ -147,5 +147,12 @@ public class UIService : MonoBehaviour
             int j = random.Next(i + 1);
             (array[i], array[j]) = (array[j], array[i]);
         }
+    }
+
+    public void OnUpgradeChosen(int upgradeChosen)
+    {
+        GameManager.Instance.PlayerWeaponController.
+            UpgradeWeapons((WeaponType)weaponsData[upgradeChosen], (UpgradeType)upgradesData[upgradeChosen]);   
+        GameManager.Instance.EventService.InvokePlayerSelectedUpgradeEvent();
     }
 }
