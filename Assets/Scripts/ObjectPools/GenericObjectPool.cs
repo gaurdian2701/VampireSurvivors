@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenericObjectPool<T> where T : class 
 {
     protected int maxObjectsInPool;
-    private List<PooledObject<T>> pooledObjects = new List<PooledObject<T>>();
+    protected List<PooledObject<T>> pooledObjects = new List<PooledObject<T>>();
 
     protected virtual T GetObjectFromPool()
     {
@@ -18,6 +18,9 @@ public class GenericObjectPool<T> where T : class
                 return pooledObject.Object;
             }
         }
+        
+        // if(pooledObjects.Count != 0)
+        //     Debug.Log("Failed tp find object in the pool for " + pooledObjects[0].Object);
         return CreateNewPooledObject();
     }
     
@@ -42,7 +45,12 @@ public class GenericObjectPool<T> where T : class
     {
         PooledObject<T> pooledObject = pooledObjects.Find(x => x.Object.Equals(obj));
         if (pooledObject != null)
+        {
             pooledObject.IsUsed = false;
+            Debug.Log("Found object in Pool for " + obj);
+        }
+        else 
+            Debug.Log("No object in Pool for " + obj);
     }
     public class PooledObject<T>
     {

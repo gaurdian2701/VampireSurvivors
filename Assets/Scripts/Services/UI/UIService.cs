@@ -13,22 +13,25 @@ public class UIService : MonoBehaviour
 {
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject upgradesPanel;
+    [FormerlySerializedAs("settingsPanel")] [SerializeField] private GameObject optionsPanel;
     [SerializeField] private Image playerHealthBar;
     [SerializeField] private Image playerXpBar;
     [FormerlySerializedAs("playerXpText")] [SerializeField] private TextMeshProUGUI playerXpLevelText;
     [FormerlySerializedAs("weaponToBeUpgradedText")] [SerializeField] private List<TextMeshProUGUI> weaponToBeUpgradedTextList;
     [FormerlySerializedAs("upgradeTypeText")] [SerializeField] private List<TextMeshProUGUI> upgradeTypeTextList;
 
+    private PlayerController playerController;
+    private Vector2 xpBarOriginalPos;
+    private Vector2 healthBarOriginalPos;
+    private float modifier = 5f;
+    
     private int currentMaxPlayerHealth;
-    private int currentXpToNextLevel;
+    private float currentXpToNextLevel;
     private int currentPlayerLevel;
-    private int numberOfWeaponTypes = Enum.GetNames(typeof(WeaponType)).Length;
     private int numberOfUpgradeTypes = Enum.GetNames(typeof(UpgradeType)).Length;
 
     private int[] weaponsData;
     private int[] upgradesData;
-    
-    private Random random = new Random();
 
     public void Init()
     {
@@ -53,13 +56,32 @@ public class UIService : MonoBehaviour
 
     private void Start()
     {
-        currentMaxPlayerHealth = GameManager.Instance.PlayerController.GetPlayerMaxHealth();
-        currentXpToNextLevel = GameManager.Instance.PlayerController.GetCurrentXpToNextLevel();
+        xpBarOriginalPos = playerXpBar.rectTransform.anchoredPosition;
+        playerController = GameManager.Instance.PlayerController;
+        currentMaxPlayerHealth = playerController.GetPlayerMaxHealth();
+        currentXpToNextLevel = playerController.GetCurrentXpToNextLevel();
     }
 
     private void OnDestroy()
     {
         UnsubscribeFromEvents();
+    }
+
+    private void Update()
+    {
+        ShimmerXpBar();
+        ShimmerHealthBar();
+        modifier *= -1f;
+    }
+
+    private void ShimmerXpBar()
+    {
+        playerXpBar.rectTransform.anchoredPosition = new Vector2(xpBarOriginalPos.x + modifier, xpBarOriginalPos.y);
+    }
+
+    private void ShimmerHealthBar()
+    {
+        playerHealthBar.rectTransform.anchoredPosition = new Vector2(healthBarOriginalPos.x + modifier, healthBarOriginalPos.y);
     }
 
     private void SubscribeToEvents()
@@ -90,6 +112,7 @@ public class UIService : MonoBehaviour
                 break;
             
             case GamePauseType.PauseOnPlayerLevelUp :
+                currentXpToNextLevel = playerController.GetCurrentXpToNextLevel();
                 upgradesPanel.SetActive(true);
                 GenerateUpgradesForPlayer();
                 break;
@@ -99,6 +122,7 @@ public class UIService : MonoBehaviour
     private void OnGameResume()
     {
         pausePanel.SetActive(false);
+        optionsPanel.SetActive(false);
         upgradesPanel.SetActive(false);
     }
 
@@ -107,9 +131,21 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.InvokeGameEnteredPlayStateEvent();
     }
 
+    public void OnOptionsButtonClicked()
+    {
+        pausePanel.SetActive(false);
+        optionsPanel.SetActive(true);
+    }
+
+    public void OnOptionsBackButtonClicked()
+    {
+        optionsPanel.SetActive(false);
+        pausePanel.SetActive(true);
+    }
+
     private void DecreaseHealth(int damage) => playerHealthBar.fillAmount -= (float) damage / currentMaxPlayerHealth;
-    
-    private void IncreaseXp() => playerXpBar.fillAmount += (float) currentXpToNextLevel / currentMaxPlayerHealth;
+
+    private void IncreaseXp() => playerXpBar.fillAmount = playerController.GetCurrentPlayerXp() / currentXpToNextLevel;
 
     private void UpdatePlayerLevelUI()
     {

@@ -6,15 +6,17 @@ public class XpPickupPool : GenericObjectPool<GameObject>
 {
     private GameObject xpPickupPrefab;
 
-    public XpPickupPool(GameObject xpPrefab, int maxObjectsInPool)
+    public XpPickupPool(GameObject xpPickupPrefab, int maxObjectsInPool)
     {
-        this.xpPickupPrefab = xpPrefab;
+        this.xpPickupPrefab = xpPickupPrefab;
         this.maxObjectsInPool = maxObjectsInPool;
     }
 
     public GameObject GetXpFromPool() 
     {
-        return GetObjectFromPool();
+        GameObject xpToReturn = GetObjectFromPool();
+        xpToReturn?.SetActive(true);
+        return xpToReturn;
     }
     protected override GameObject CreateNewObject()
     {

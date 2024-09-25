@@ -49,6 +49,7 @@ public class PlayerController : Character, IPausable
 
     public int GetPlayerMaxHealth() => HealthController.GetMaxHealth();
     public int GetCurrentXpToNextLevel() => playerXpController.currentXpToNextLevel;
+    public int GetCurrentPlayerXp() => playerXpController.currentXp;
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {
@@ -95,9 +96,9 @@ public class PlayerController : Character, IPausable
         if (other.CompareTag("Pickup"))
         {
             GameObject xp = other.gameObject;
-            xp.gameObject.SetActive(false);
             GameManager.Instance.ObjectPoolingService.XpPool.ReturnObjectToPool(xp);
             GameManager.Instance.EventService.InvokePlayerPickedUpXpEvent();
+            xp.SetActive(false);
         }
     }
 }

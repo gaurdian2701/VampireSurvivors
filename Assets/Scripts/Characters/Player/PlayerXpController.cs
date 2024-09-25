@@ -5,13 +5,16 @@ using UnityEngine;
 public class PlayerXpController
 {
     public int currentXpToNextLevel { get; private set; }
-    private int currentXp = 0;
+    public int currentXp { get; private set; }
     private int maxLevel;
+    
+    private static int xpToNextLevelIncreaseRate = 10;
 
     public PlayerXpController(PlayerXpControllerScriptableObject playerXpControllerScriptableObject)
     {
         currentXpToNextLevel = playerXpControllerScriptableObject.StartingPlayerXpToNextLevel;
         maxLevel = playerXpControllerScriptableObject.PlayerMaxLevel;
+        currentXp = 0;
         SubscribeToEvents();
     }
 
@@ -35,8 +38,9 @@ public class PlayerXpController
         currentXp++;
         if (currentXp >= currentXpToNextLevel)
         {
-            GameManager.Instance.EventService.InvokePLayerLevelledUpEvent();
             currentXp = 0;
+            currentXpToNextLevel += xpToNextLevelIncreaseRate;
+            GameManager.Instance.EventService.InvokePLayerLevelledUpEvent();
         }
     }
 }
