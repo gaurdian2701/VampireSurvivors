@@ -8,7 +8,7 @@ public class PlayerXpController
     public int currentXp { get; private set; }
     private int maxLevel;
     
-    private static int xpToNextLevelIncreaseRate = 10;
+    private const int xpToNextLevelIncreaseRate = 10;
 
     public PlayerXpController(PlayerXpControllerScriptableObject playerXpControllerScriptableObject)
     {

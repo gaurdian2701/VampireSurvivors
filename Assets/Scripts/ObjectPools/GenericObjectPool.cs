@@ -45,12 +45,7 @@ public class GenericObjectPool<T> where T : class
     {
         PooledObject<T> pooledObject = pooledObjects.Find(x => x.Object.Equals(obj));
         if (pooledObject != null)
-        {
             pooledObject.IsUsed = false;
-            Debug.Log("Found object in Pool for " + obj);
-        }
-        else 
-            Debug.Log("No object in Pool for " + obj);
     }
     public class PooledObject<T>
     {

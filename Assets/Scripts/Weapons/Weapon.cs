@@ -10,7 +10,7 @@ public class Weapon : MonoBehaviour
     public float BaseAttackSpeed { get; private set; }
     public float BaseKnockBackForce { get; private set; }
     
-    protected Transform playerBodyTransform;
+    protected Transform playerTransform;
     
     public readonly int baseDamageIncreaseRate = 2;
     public readonly float baseAttackSpeedIncreaseRate = 50f;
@@ -22,13 +22,13 @@ public class Weapon : MonoBehaviour
         BaseKnockBackForce = weaponData.KnockbackForce;
     }
 
-    public void InitializeWeaponPositionAndOrientation(Transform playerTransform, Transform playerBodyTransform,
+    public void InitializeWeaponPositionAndOrientation(Transform playerTransform, 
         Vector3 weaponLocalPositionOffset)
     {
         transform.SetParent(playerTransform);
-        this.playerBodyTransform = playerBodyTransform;
-        transform.localPosition = playerBodyTransform.localPosition + weaponLocalPositionOffset;
-        Vector3 vectorAwayFromPlayerBody = transform.position - playerBodyTransform.position;
+        this.playerTransform = playerTransform;
+        transform.localPosition = weaponLocalPositionOffset;
+        Vector3 vectorAwayFromPlayerBody = transform.position - playerTransform.position;
         transform.up = vectorAwayFromPlayerBody.normalized;
     }
     private void OnTriggerEnter2D(Collider2D other)

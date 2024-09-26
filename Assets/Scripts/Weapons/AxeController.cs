@@ -30,6 +30,6 @@ public class AxeController : Weapon
 
     public override void Attack()
     {
-        transform.RotateAround(playerBodyTransform.position, Vector3.forward, BaseAttackSpeed * Time.deltaTime);
+        transform.RotateAround(playerTransform.position, Vector3.forward, BaseAttackSpeed * Time.deltaTime);
     }
 }

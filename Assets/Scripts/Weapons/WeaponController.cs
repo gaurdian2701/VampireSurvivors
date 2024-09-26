@@ -8,7 +8,6 @@ public class WeaponController : MonoBehaviour
 {
     [FormerlySerializedAs("playerEquipmentData")] [SerializeField] private PlayerWeaponsScriptableObject playerWeaponsData;
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private Transform playerBodyTransform;
 
     private Dictionary<WeaponType, GameObject> weaponPrefabCache;
     private Dictionary<WeaponType, List<Weapon>> equippedWeapons;
@@ -82,7 +81,7 @@ public class WeaponController : MonoBehaviour
         {
             List<Weapon> currentWeaponList = equippedWeapons[(WeaponType)i];
             for(int j = 0; j < currentWeaponList.Count; j++)
-                currentWeaponList[j].InitializeWeaponPositionAndOrientation(playerTransform, playerBodyTransform, GetWeaponPositionAroundPlayer(currentWeaponList.Count, j));
+                currentWeaponList[j].InitializeWeaponPositionAndOrientation(playerTransform, GetWeaponPositionAroundPlayer(currentWeaponList.Count, j));
             //This will spawn different weapon classes on top of each other, have to change later
         }
     }

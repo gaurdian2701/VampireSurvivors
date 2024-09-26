@@ -23,12 +23,19 @@ public class UIService : MonoBehaviour
     private PlayerController playerController;
     private Vector2 xpBarOriginalPos;
     private Vector2 healthBarOriginalPos;
-    private float modifier = 5f;
+
+    private bool xpBarShakeCoroutineActive;
+    private bool healthBarShakeCoroutineActive;
+    
+    private float currentXpToNextLevel;
     
     private int currentMaxPlayerHealth;
-    private float currentXpToNextLevel;
     private int currentPlayerLevel;
     private int numberOfUpgradeTypes = Enum.GetNames(typeof(UpgradeType)).Length;
+
+    private const float shakeFrequency = 100f;
+    private const float shakeAmplitude = 5f;
+    private const float shakeDuration = 0.5f;
 
     private int[] weaponsData;
     private int[] upgradesData;
@@ -56,7 +63,7 @@ public class UIService : MonoBehaviour
 
     private void Start()
     {
-        xpBarOriginalPos = playerXpBar.rectTransform.anchoredPosition;
+        xpBarOriginalPos = playerXpBar.rectTransform.anchoredPosition; ;
         playerController = GameManager.Instance.PlayerController;
         currentMaxPlayerHealth = playerController.GetPlayerMaxHealth();
         currentXpToNextLevel = playerController.GetCurrentXpToNextLevel();
@@ -69,19 +76,10 @@ public class UIService : MonoBehaviour
 
     private void Update()
     {
-        ShimmerXpBar();
-        ShimmerHealthBar();
-        modifier *= -1f;
-    }
-
-    private void ShimmerXpBar()
-    {
-        playerXpBar.rectTransform.anchoredPosition = new Vector2(xpBarOriginalPos.x + modifier, xpBarOriginalPos.y);
-    }
-
-    private void ShimmerHealthBar()
-    {
-        playerHealthBar.rectTransform.anchoredPosition = new Vector2(healthBarOriginalPos.x + modifier, healthBarOriginalPos.y);
+        if(xpBarShakeCoroutineActive)
+            playerXpBar.rectTransform.anchoredPosition = new Vector2(xpBarOriginalPos.x + Mathf.Sin(Time.time * shakeFrequency) * shakeAmplitude, xpBarOriginalPos.y);
+        if(healthBarShakeCoroutineActive)
+            playerHealthBar.rectTransform.anchoredPosition = new Vector2(healthBarOriginalPos.x + Mathf.Sin(Time.time * shakeFrequency) * shakeAmplitude, healthBarOriginalPos.y);
     }
 
     private void SubscribeToEvents()
@@ -90,7 +88,7 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.OnGameEnteredPlayState += OnGameResume;
         GameManager.Instance.EventService.OnPlayerTookDamage += DecreaseHealth;
         GameManager.Instance.EventService.OnPlayerPickedUpXp += IncreaseXp;
-        GameManager.Instance.EventService.OnPlayerLevelledUp += UpdatePlayerLevelUI;
+        GameManager.Instance.EventService.OnPlayerLevelledUp += UpdatePlayerLevelUI; 
     }
 
     private void UnsubscribeFromEvents()
@@ -143,13 +141,39 @@ public class UIService : MonoBehaviour
         pausePanel.SetActive(true);
     }
 
-    private void DecreaseHealth(int damage) => playerHealthBar.fillAmount -= (float) damage / currentMaxPlayerHealth;
+    private void DecreaseHealth(int damage)
+    {
+        playerHealthBar.fillAmount -= (float) damage / currentMaxPlayerHealth;
+        if(!healthBarShakeCoroutineActive)
+            StartCoroutine(nameof(ShakeHealthBarCoroutine));
+    }
 
-    private void IncreaseXp() => playerXpBar.fillAmount = playerController.GetCurrentPlayerXp() / currentXpToNextLevel;
+    private void IncreaseXp()
+    {
+        playerXpBar.fillAmount = playerController.GetCurrentPlayerXp() / currentXpToNextLevel;
+        if(!xpBarShakeCoroutineActive)
+            StartCoroutine(nameof(ShakeXpBarCoroutine));
+    }
+
+    private IEnumerator ShakeXpBarCoroutine()
+    {
+        xpBarShakeCoroutineActive = true;
+        yield return new WaitForSecondsRealtime(shakeDuration);
+        xpBarShakeCoroutineActive = false;
+        playerXpBar.rectTransform.anchoredPosition = xpBarOriginalPos;
+    }
+
+    private IEnumerator ShakeHealthBarCoroutine()
+    {
+        healthBarShakeCoroutineActive = true;
+        yield return new WaitForSecondsRealtime(shakeDuration);
+        healthBarShakeCoroutineActive = false;
+        playerHealthBar.rectTransform.anchoredPosition = healthBarOriginalPos;
+    }
 
     private void UpdatePlayerLevelUI()
     {
-        currentPlayerLevel += 1;
+        currentPlayerLevel++;
         playerXpBar.fillAmount = 0f;
         playerXpLevelText.text = $"{currentPlayerLevel}";
         upgradesPanel.SetActive(true);
@@ -163,7 +187,7 @@ public class UIService : MonoBehaviour
 
     private void FillUpgradeText<T>(List<TextMeshProUGUI> textList, int[] dataArray) where T : Enum
     {
-        ShuffleUpgradeData(dataArray);
+        MiscFunctions.ShuffleArray(dataArray);
         int i = 0, j = 0;
 
         while (i < textList.Count)
@@ -172,16 +196,6 @@ public class UIService : MonoBehaviour
             i++;
             if (j < dataArray.Length - 1)
                 j++;
-        }
-    }
-    
-    private void ShuffleUpgradeData(int[] array)
-    {
-        Random random = new Random();
-        for (int i = array.Length - 1; i > 0; i--)
-        {
-            int j = random.Next(i + 1);
-            (array[i], array[j]) = (array[j], array[i]);
         }
     }
 

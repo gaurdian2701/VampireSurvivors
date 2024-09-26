@@ -7,12 +7,13 @@ public class PlayerController : Character, IPausable
 {
     [SerializeField] private PlayerScriptableObject playerScriptableObject;
     [SerializeField] private PlayerXpControllerScriptableObject playerXpControllerScriptableObject;
-    [SerializeField] private Transform playerBodyTransform;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
+    [SerializeField] private Animator animator;
 
     private PlayerXpController playerXpController;
     private EventService eventService;
     private Vector3 movementVector;
+    private Vector2 playerMovementInput;
     private bool attackingWithMeleeWeapon;
     private bool playerPaused;
     private float currentSpeed;
@@ -53,12 +54,10 @@ public class PlayerController : Character, IPausable
 
     public void TakePlayerMovementInput(InputAction.CallbackContext ctx)
     {
-        Vector2 playerInput = ctx.ReadValue<Vector2>();
-        movementVector = new Vector3(playerInput.x, playerInput.y, 0f);
-        ChangeDirection(playerInput.x);
+        playerMovementInput = ctx.ReadValue<Vector2>();
+        movementVector = new Vector3(playerMovementInput.x, playerMovementInput.y, 0f);
+        ChangeDirection(playerMovementInput.x);
     }
-
-    public Transform GetPlayerBodyTransform() => playerBodyTransform;
 
     public void GetPlayerMeleeAttackInput(InputAction.CallbackContext ctx)
     {
@@ -79,12 +78,16 @@ public class PlayerController : Character, IPausable
     private void ChangeDirection(float input)
     {
         if (input > 0f)
-            playerSpriteRenderer.flipX = true;
-        else if (input < 0f)
             playerSpriteRenderer.flipX = false;
+        else if (input < 0f)
+            playerSpriteRenderer.flipX = true;
     }
- 
-    private void MovePlayer() => transform.position += currentSpeed * Time.deltaTime * movementVector;
+
+    private void MovePlayer()
+    {
+        transform.position += currentSpeed * Time.deltaTime * movementVector;
+        animator.SetFloat("Speed", playerMovementInput.magnitude);
+    }
     private void AttackWithMeleeWeapon()
     {
         if (attackingWithMeleeWeapon && !playerPaused)

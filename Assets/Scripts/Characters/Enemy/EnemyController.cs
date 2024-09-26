@@ -18,7 +18,6 @@ public class EnemyController : Character, IPausable
     private EnemyMovement movementController;
     
     private Transform playerTransform;
-    private Transform playerBodyTransform;
     
     private bool isInKnockBack;
     private bool objectIsDisabled;
@@ -27,24 +26,24 @@ public class EnemyController : Character, IPausable
     
     private float enemySpeedModifier;
     private float stoppingDistance;
-    private int enemyDamage;
-    private Color originalEnemyColor;
-    private EnemyClass enemyClass;
-
     
-    private static float knockBackDuration = 2.5f;
-    private static int milliseconds = 100;
-    private static Color enemyColorOnHit = new Color(205f, 0f, 0f);
+    private int enemyDamage;
+    
+    private Color originalEnemyColor;
+    private Color enemyColorOnHit = new Color(205f, 0f, 0f);
+    
+    private EnemyClass enemyClass;
+    
+    private const float knockBackDuration = 2.5f;
+    private const int milliseconds = 100;
 
     private void Awake()
     {
         Init(enemyData.EnmeyMaxHealth, enemyData.EnemySpeed);
-        enemySpeedModifier = enemyData.EnemySpeedModifier;
         stoppingDistance = enemyData.EnemyStoppingDistance;
         enemyDamage = enemyData.EnemyDamage;
         enemyClass = enemyData.EnemyClass;
         playerTransform = GameManager.Instance.PlayerController.transform;
-        playerBodyTransform = GameManager.Instance.PlayerController.GetPlayerBodyTransform();
         LoadMovementController(enemyData.EnemyMovementType);
         SubscribeToEvents();
     }
@@ -113,7 +112,6 @@ public class EnemyController : Character, IPausable
         
         MoveEnemy();
         UpdateSpriteDirection();
-        CheckIfPlayerIsFacingEnemy();
         CheckStoppingDistance();
     }
 
@@ -133,14 +131,6 @@ public class EnemyController : Character, IPausable
             enemySpriteRenderer.flipX = true;
         else
             enemySpriteRenderer.flipX = false;
-    }
-
-    private void CheckIfPlayerIsFacingEnemy() //Enemy moves faster if player is not facing enemy
-    {
-        if (Vector2.Dot(playerBodyTransform.right, transform.position - playerTransform.position) < 0f)
-            movementController.SetEnemySpeedModifier(1f);
-        else
-            movementController.SetEnemySpeedModifier(enemySpeedModifier);
     }
 
     public override void TakeDamage(int someDamage, float knockBackForce)
@@ -207,6 +197,9 @@ public class EnemyController : Character, IPausable
 
     public override void Die()
     {
+        if (objectIsDisabled)
+            return;
+        
         animator.enabled = true;
         bloodSplatterSpriteRenderer.enabled = true;
         enemySpriteRenderer.enabled = false; 

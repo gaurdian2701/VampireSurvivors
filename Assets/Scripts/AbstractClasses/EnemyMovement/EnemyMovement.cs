@@ -10,7 +10,12 @@ public abstract class EnemyMovement
     protected float enemySpeedModifier;
     protected Transform playerTransform;
     protected Transform enemyTransform;
-    
+
+    public EnemyMovement()
+    {
+        SetEnemySpeedModifier(1f);
+    }
+
     public abstract void UpdatePosition();
     public void SetCurrentEnemySpeed(float someSpeed) => currentEnemySpeed = someSpeed;
     public void SetEnemySpeedModifier(float someModifier) => enemySpeedModifier = someModifier;

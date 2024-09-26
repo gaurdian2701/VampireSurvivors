@@ -11,7 +11,8 @@ public class EnemySpawnService : IPausable
     private int startingNumberOfEnemies;
     private int numberOfEnemiesInHorde;
     
-    private static float spawnCircleRadius = 15f;
+    private const float spawnCircleRadius = 15f;
+    
     private static int currentNumberOfKillsToInitiateHorde;
     private int currentKillCountForHorde;
     private int numberOEnemyTypes = Enum.GetNames(typeof(EnemyClass)).Length;
