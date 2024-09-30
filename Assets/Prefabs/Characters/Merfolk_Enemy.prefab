@@ -136,6 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: dcce605d67b0a9e4eb0f94bdd2ef0313, type: 2}
   enemyBodyTransform: {fileID: 8943446801406790251}
+  enemyHitBox: {fileID: 551571313033289954}
   enemySpriteRenderer: {fileID: 5834159095266766742}
   bloodSplatterSpriteRenderer: {fileID: 3967761549485204061}
   rb: {fileID: 7463086524684811735}

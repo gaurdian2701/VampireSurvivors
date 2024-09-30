@@ -10,6 +10,7 @@ public class EnemyController : Character, IPausable
 
     [Header("ENEMY COMPONENTS")]
     [SerializeField] private Transform enemyBodyTransform;
+    [SerializeField] private CircleCollider2D enemyHitBox;
     [SerializeField] private SpriteRenderer enemySpriteRenderer;
     [SerializeField] private SpriteRenderer bloodSplatterSpriteRenderer;
     [SerializeField] private Rigidbody2D rb;
@@ -60,6 +61,7 @@ public class EnemyController : Character, IPausable
         bloodSplatterSpriteRenderer.enabled = false;
         enemySpriteRenderer.enabled = true;
         objectIsDisabled = false;
+        enemyHitBox.enabled = true;
     }
 
     private void OnDisable()
@@ -202,7 +204,8 @@ public class EnemyController : Character, IPausable
         
         animator.enabled = true;
         bloodSplatterSpriteRenderer.enabled = true;
-        enemySpriteRenderer.enabled = false; 
+        enemySpriteRenderer.enabled = false;
+        enemyHitBox.enabled = false;
         GameManager.Instance.EventService.InvokeEnemyDiedEvent(transform.position);
     }
 
