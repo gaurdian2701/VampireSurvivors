@@ -26,10 +26,8 @@ public class EnemySpawnService : IPausable
         currentKillCountForHorde = 0;
 
         for (int i = 0; i < startingNumberOfEnemies; i++)
-        {
-            SpawnEnemy(EnemyClass.MERMAN);
-            SpawnEnemy(EnemyClass.RAVEN);
-        }
+            SpawnEnemy();
+        
         SubscribeToEvents();
     }
     
@@ -50,47 +48,37 @@ public class EnemySpawnService : IPausable
 
     private void OnEnemyDiedListener(Vector3 enemyPosition) //CHANGE THIS TO SPAWN RANDOM ENEMIES INSTEAD OF HAVING TO GET ENEMY CLASS FROM EVENT LISTENER
     {
-        int classToSpawn = Random.Range(0, numberOEnemyTypes);
         currentKillCountForHorde++;
         if (currentKillCountForHorde <= currentNumberOfKillsToInitiateHorde)  
-            SpawnEnemy((EnemyClass)classToSpawn);
+            SpawnEnemy();
         else
-            SpawnHorde((EnemyClass)classToSpawn);
+            SpawnHorde();
     }
 
-    private void GetEnemyFromPool(EnemyClass enemyClass)
+    private void GetEnemyFromPool()
     {
-        switch (enemyClass)
-        {
-            case EnemyClass.MERMAN :
-                enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.GetEnemyFromPool();
-                break;
-            
-            case EnemyClass.RAVEN:
-                enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.Raven_EnemyPool.GetEnemyFromPool();
-                break;
-        }
+        enemyToBeSpawned = GameManager.Instance.ObjectPoolingService.MainEnemyPool.GetEnemyFromPool();
         if (enemyToBeSpawned == null)
             return;
         enemyToBeSpawned.gameObject.SetActive(true);
     }
 
-    private void SpawnEnemy(EnemyClass enemyClass)
+    private void SpawnEnemy()
     {
-        GetEnemyFromPool(enemyClass);
+        GetEnemyFromPool();
         if(enemyToBeSpawned == null) return;
         //Using 2pi/enemynumber to get enemy position around a circle point in radians,
         //then multiplying it with random number to spawn on random points/equal points around the circle.
         float radiansPositionOnCircle = 2 * Mathf.PI / startingNumberOfEnemies * Random.Range(0f, startingNumberOfEnemies);
         enemyToBeSpawned.transform.position = GetCoordinatesOutsideOfPlayerView(radiansPositionOnCircle);
     }
-    private void SpawnHorde(EnemyClass enemyClass)
+    private void SpawnHorde()
     {
         currentKillCountForHorde = 0;
         currentNumberOfKillsToInitiateHorde += 5;
         for (int i = 0; i < numberOfEnemiesInHorde; i++)
         {
-            GetEnemyFromPool(enemyClass);
+            GetEnemyFromPool();
             float radiansPositionOnCircle = 2 * Mathf.PI / numberOfEnemiesInHorde * i;
             if (enemyToBeSpawned == null) return;
             enemyToBeSpawned.transform.position = GetCoordinatesOutsideOfPlayerView(radiansPositionOnCircle);

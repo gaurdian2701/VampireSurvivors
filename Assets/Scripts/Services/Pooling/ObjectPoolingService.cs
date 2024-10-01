@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class ObjectPoolingService
 {
-    public EnemyPool Merman_EnemyPool;
-    public EnemyPool Raven_EnemyPool;
+    public EnemyPool MainEnemyPool;
     public XpPickupPool XpPool;
 
     public ObjectPoolingService(ObjectPoolServiceScriptableObject objectPoolServiceData)
     {
-        Merman_EnemyPool = new EnemyPool(objectPoolServiceData.Merman_EnemyPrefab, objectPoolServiceData.MaxEnemies);
-        Raven_EnemyPool = new EnemyPool(objectPoolServiceData.Raven_EnemyPrefab, objectPoolServiceData.MaxEnemies);
-        XpPool = new XpPickupPool(objectPoolServiceData.XpPrefab, objectPoolServiceData.MaxXps);
+        MainEnemyPool = new EnemyPool(objectPoolServiceData.EnemyPrefabsList, objectPoolServiceData.MaxEnemies);
+        XpPool = new XpPickupPool(objectPoolServiceData.XpPrefab, objectPoolServiceData.MaxXps); 
     }
 }

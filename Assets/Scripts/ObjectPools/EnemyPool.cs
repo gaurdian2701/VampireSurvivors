@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class EnemyPool : GenericObjectPool<EnemyController>
 {
-    private EnemyController enemyPrefab;
-
-    public EnemyPool(EnemyController enemyPrefab, int maxObjectsInPool)
+    private List<EnemyController> enemyPrefabsList;
+    private EnemyController mermanPrefab;
+    private EnemyController ravenPrefab;
+    private EnemyController currentPrefabToBeSpawned;
+    
+    public EnemyPool(List<EnemyController> enemyPrefabsList, int maxObjectsInPool)
     {
-        this.enemyPrefab = enemyPrefab;
+        this.enemyPrefabsList = enemyPrefabsList;
         this.maxObjectsInPool = maxObjectsInPool;
     }
 
@@ -16,9 +20,10 @@ public class EnemyPool : GenericObjectPool<EnemyController>
     {
         return GetObjectFromPool();
     }
+    
     protected override EnemyController CreateNewObject()
     {
-        EnemyController enemy = GameObject.Instantiate(enemyPrefab);
-        return enemy;
+        Random random = new Random();
+        return GameObject.Instantiate(enemyPrefabsList[random.Next(0, enemyPrefabsList.Count)]);
     } 
 }

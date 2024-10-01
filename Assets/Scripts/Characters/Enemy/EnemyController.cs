@@ -33,8 +33,6 @@ public class EnemyController : Character, IPausable
     private Color originalEnemyColor;
     private Color enemyColorOnHit = new Color(205f, 0f, 0f);
     
-    private EnemyClass enemyClass;
-    
     private const float knockBackDuration = 2.5f;
     private const int milliseconds = 100;
 
@@ -43,7 +41,6 @@ public class EnemyController : Character, IPausable
         Init(enemyData.EnemyMaxHealth, enemyData.EnemySpeed);
         stoppingDistance = enemyData.EnemyStoppingDistance;
         enemyDamage = enemyData.EnemyDamage;
-        enemyClass = enemyData.EnemyClass;
         playerTransform = GameManager.Instance.PlayerController.transform;
         LoadMovementController(enemyData.EnemyMovementType);
         SubscribeToEvents();
@@ -211,20 +208,12 @@ public class EnemyController : Character, IPausable
 
     public void OnDied()
     {
-        ReturnEnemyToPool(enemyClass);
+        ReturnEnemyToPool();
         gameObject.SetActive(false);
     }
 
-    private void ReturnEnemyToPool(EnemyClass enemyClass)
+    private void ReturnEnemyToPool()
     {
-        switch (enemyClass)
-        {
-            case EnemyClass.MERMAN :
-                GameManager.Instance.ObjectPoolingService.Merman_EnemyPool.ReturnObjectToPool(this);
-                break;
-            case EnemyClass.RAVEN :
-                GameManager.Instance.ObjectPoolingService.Raven_EnemyPool.ReturnObjectToPool(this);
-                break;
-        }
+        GameManager.Instance.ObjectPoolingService.MainEnemyPool.ReturnObjectToPool(this);
     }
 }
