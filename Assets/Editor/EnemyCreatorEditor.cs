@@ -20,6 +20,7 @@ public class EnemyCreatorEditor : EditorWindow
 
     private string enemyEditorScriptName = "[ENEMY CREATOR] - ";
     private string enemyPrefabFolderPath = "Assets/Resources/Enemies/";
+    private string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
     private string baseEnemyPrefabPath = "Assets/Resources/Enemies/Merfolk_Enemy.prefab";
 
     [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
@@ -87,7 +88,7 @@ public class EnemyCreatorEditor : EditorWindow
     {
         EnemyScriptableObject enemyData = CreateInstance<EnemyScriptableObject>();
         string assetPath =
-            AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyNameField.text + ".asset");
+            AssetDatabase.GenerateUniqueAssetPath(enemyScriptableObjectFolderPath + enemyNameField.text + ".asset");
         
         InitializeEnemyData(enemyData);
         AssetDatabase.CreateAsset(enemyData, assetPath);

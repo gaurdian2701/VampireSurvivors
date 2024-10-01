@@ -185,7 +185,8 @@ public class UIService : MonoBehaviour
         FillUpgradeText<UpgradeType>(upgradeTypeTextList, upgradesData);
     }
 
-    private void FillUpgradeText<T>(List<TextMeshProUGUI> textList, int[] dataArray) where T : Enum
+    private void FillUpgradeText<T>(List<TextMeshProUGUI> textList, int[] dataArray) 
+        where T : Enum
     {
         MiscFunctions.ShuffleArray(dataArray);
         int i = 0, j = 0;
@@ -202,7 +203,8 @@ public class UIService : MonoBehaviour
     public void OnUpgradeChosen(int upgradeChosen)
     {
         GameManager.Instance.PlayerWeaponController.
-            UpgradeWeapons((WeaponType)weaponsData[upgradeChosen], (UpgradeType)upgradesData[upgradeChosen]);   
+            UpgradeWeapons((WeaponType)weaponsData[upgradeChosen], 
+                (UpgradeType)upgradesData[upgradeChosen]);   
         GameManager.Instance.EventService.InvokePlayerSelectedUpgradeEvent();
     }
 }
