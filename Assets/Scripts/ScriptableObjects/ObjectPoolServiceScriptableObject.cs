@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,4 +13,6 @@ public class ObjectPoolServiceScriptableObject : ScriptableObject
     public int MaxEnemies;
     public GameObject XpPrefab;
     public int MaxXps;
+    
+    private string enemiesPath = "Enemies/";
 }

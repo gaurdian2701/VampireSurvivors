@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81eac7fc4d560e94ab1f28db2efd0516, type: 3}
-  m_Name: Merman
+  m_Name: orc
   m_EditorClassIdentifier: 
-  EnemySprite: {fileID: 21300000, guid: 77c04dc0f203dfb4b8850d6f088eae20, type: 3}
-  EnemyMaxHealth: 4
-  EnemyDamage: 3
-  EnemySpeed: 1
-  EnemyStoppingDistance: 1.2
+  EnemySprite: {fileID: 21300000, guid: c9eee876dfe345f4a9acf58cc066aad4, type: 3}
+  EnemyMaxHealth: 0
+  EnemyDamage: 0
+  EnemySpeed: 0
+  EnemyStoppingDistance: 0
   EnemyMovementType: 0

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.UIElements;
@@ -15,7 +16,11 @@ public class EnemyCreatorEditor : EditorWindow
     private IntegerField enemyDamageField;
     private FloatField enemySpeedField;
     private FloatField enemyStoppingDistanceField;
-    
+    private ObjectField spriteField;
+
+    private string enemyEditorScriptName = "[ENEMY CREATOR] - ";
+    private string enemyPrefabFolderPath = "Assets/Resources/Enemies/";
+    private string baseEnemyPrefabPath = "Assets/Resources/Enemies/Merfolk_Enemy.prefab";
 
     [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
     public static void ShowWindow()
@@ -41,12 +46,15 @@ public class EnemyCreatorEditor : EditorWindow
 
         enemySpeedField = new FloatField("Enemy Speed");
         enemyStoppingDistanceField = new FloatField("EnemyStoppingDistance");
-
+        
+        spriteField = new ObjectField("Enemy Sprite");
+        
         button = new Button();
         button.text = "Create Enemy";
-        button.clicked += CreatePrefab;
+        button.clicked += CreateEnemy;
 
         box.Add(enemyNameField);
+        box.Add(spriteField);
         box.Add(maxHealthField);
         box.Add(enemyDamageField);
         box.Add(enemySpeedField);
@@ -58,34 +66,54 @@ public class EnemyCreatorEditor : EditorWindow
         root.Add(box);
     }
 
-    private void CreatePrefab()
+    private void CreateEnemy()
     {
-        Debug.Log(enemyMovementTypeDropdownField.value);
-        if (!string.IsNullOrEmpty(enemyNameField.text))
-            GenerateEnemy();
-        else
-            Debug.LogError("[ENEMY CREATOR] - CANNOT CREATE ENEMY WITH NO NAME");
+        if (string.IsNullOrEmpty(enemyNameField.value))
+        {
+            Debug.Log(enemyEditorScriptName + " CANNOT CREATE ENEMY WITH NO NAME");
+            return;
+        }
+        
+        if (spriteField.value as Sprite == null)
+        {
+            Debug.LogError(enemyEditorScriptName + " CANNOT CREATE ENEMY WITH NO/INVALID SPRITE");
+            return;
+        }
+        
+        GenerateEnemy();
     }
 
     private void GenerateEnemy()
     {
-        EnemyScriptableObject enemy = CreateInstance<EnemyScriptableObject>();
+        EnemyScriptableObject enemyData = CreateInstance<EnemyScriptableObject>();
         string assetPath =
-            AssetDatabase.GenerateUniqueAssetPath("Assets/GameData/Enemies/" + enemyNameField.text + ".asset");
+            AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyNameField.text + ".asset");
         
-        InitializeEnemyData(ref enemy);
-        AssetDatabase.CreateAsset(enemy, assetPath);
-        EditorGUIUtility.PingObject(enemy);
+        InitializeEnemyData(enemyData);
+        AssetDatabase.CreateAsset(enemyData, assetPath);
+        EditorGUIUtility.PingObject(CreateEnemyPrefab(enemyData));
     }
 
-    private void InitializeEnemyData(ref EnemyScriptableObject enemy)
+    private void InitializeEnemyData(EnemyScriptableObject enemyData)
     {
-        enemy.name = enemyNameField.text;
+        enemyData.name = enemyNameField.text;
         Enum.TryParse(enemyMovementTypeDropdownField.value, out EnemyMovementType enemyMovementType);
-        enemy.EnemyMovementType = enemyMovementType;
-        enemy.EnemyMaxHealth = maxHealthField.value;
-        enemy.EnemyDamage = enemyDamageField.value;
-        enemy.EnemySpeed = enemySpeedField.value;
-        enemy.EnemyStoppingDistance = enemyStoppingDistanceField.value;
+        enemyData.EnemyMovementType = enemyMovementType;
+        enemyData.EnemyMaxHealth = maxHealthField.value;
+        enemyData.EnemyDamage = enemyDamageField.value;
+        enemyData.EnemySpeed = enemySpeedField.value;
+        enemyData.EnemyStoppingDistance = enemyStoppingDistanceField.value;
+        Sprite enemySprite = spriteField.value as Sprite;
+        enemyData.EnemySprite = enemySprite;
+    }
+
+    private GameObject CreateEnemyPrefab(EnemyScriptableObject enemyData)
+    {
+        GameObject baseEnemy =
+            (GameObject)AssetDatabase.LoadAssetAtPath(baseEnemyPrefabPath, typeof(GameObject));
+        string otherEnemyPath = AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
+        GameObject newlyCreatedEnemy = PrefabUtility.SaveAsPrefabAsset(baseEnemy, otherEnemyPath);
+        newlyCreatedEnemy.GetComponent<EnemyController>().InitializeEnemyData(enemyData);
+        return newlyCreatedEnemy;
     }
 }

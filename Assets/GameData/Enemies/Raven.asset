@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81eac7fc4d560e94ab1f28db2efd0516, type: 3}
   m_Name: Raven
   m_EditorClassIdentifier: 
-  EnmeyMaxHealth: 1
+  EnemySprite: {fileID: 21300000, guid: 6b783b278d134464386eaf9adf9a15e6, type: 3}
+  EnemyMaxHealth: 1
   EnemyDamage: 1
   EnemySpeed: 1.5
-  EnemySpeedModifier: 1.1
   EnemyStoppingDistance: 0.5
-  EnemyImage: {fileID: 21300000, guid: 6b783b278d134464386eaf9adf9a15e6, type: 3}
   EnemyMovementType: 1
-  EnemyClass: 1

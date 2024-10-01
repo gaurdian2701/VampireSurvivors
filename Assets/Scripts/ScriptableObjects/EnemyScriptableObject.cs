@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "EnemyScriptableObject", menuName = "ScriptableObject/Enemy")]
 public class EnemyScriptableObject : ScriptableObject
 {
+    public Sprite EnemySprite;
     [FormerlySerializedAs("EnmeyMaxHealth")] [FormerlySerializedAs("MaxHealth")] public int EnemyMaxHealth;
     [FormerlySerializedAs("Damage")] public int EnemyDamage;
     public float EnemySpeed;

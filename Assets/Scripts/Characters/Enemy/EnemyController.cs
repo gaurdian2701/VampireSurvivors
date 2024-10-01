@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 public class EnemyController : Character, IPausable
 {
     [SerializeField] private EnemyScriptableObject enemyData;
-
+    
     [Header("ENEMY COMPONENTS")]
     [SerializeField] private Transform enemyBodyTransform;
     [SerializeField] private CircleCollider2D enemyHitBox;
@@ -15,7 +15,8 @@ public class EnemyController : Character, IPausable
     [SerializeField] private SpriteRenderer bloodSplatterSpriteRenderer;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
-
+    
+    
     private EnemyMovement movementController;
     
     private Transform playerTransform;
@@ -35,6 +36,11 @@ public class EnemyController : Character, IPausable
     
     private const float knockBackDuration = 2.5f;
     private const int milliseconds = 100;
+
+    public void InitializeEnemyData(EnemyScriptableObject enemyData)
+    {
+        this.enemyData = enemyData;
+    }
 
     private void Awake()
     {
