@@ -36,7 +36,7 @@ public class EnemyCreatorEditor : EditorWindow
     {
         VisualElement root = rootVisualElement;
         Box box = new Box();
-        Label label = new Label("ENEMY CREATION");
+        Label label = new Label("ENEMY CREATOR");
         label.transform.scale = new Vector3(1, 1, 0);
 
         enemyNameField = new TextField("Enemy Name");
