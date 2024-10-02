@@ -39,6 +39,7 @@ public class EnemyController : Character, IPausable
 
     public void InitializeEnemyData(EnemyScriptableObject enemyData)
     {
+        Debug.Log("Initializing the enemy data");
         this.enemyData = enemyData;
     }
 
@@ -47,6 +48,7 @@ public class EnemyController : Character, IPausable
         Init(enemyData.EnemyMaxHealth, enemyData.EnemySpeed);
         stoppingDistance = enemyData.EnemyStoppingDistance;
         enemyDamage = enemyData.EnemyDamage;
+        enemySpriteRenderer.sprite = enemyData.EnemySprite;
         playerTransform = GameManager.Instance.PlayerController.transform;
         LoadMovementController(enemyData.EnemyMovementType);
         SubscribeToEvents();
