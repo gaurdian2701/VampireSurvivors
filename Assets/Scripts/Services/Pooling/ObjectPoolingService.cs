@@ -7,9 +7,9 @@ public class ObjectPoolingService
     public EnemyPool MainEnemyPool;
     public XpPickupPool XpPool;
 
-    public ObjectPoolingService(ObjectPoolServiceScriptableObject objectPoolServiceData)
+    public ObjectPoolingService(ObjectPoolingServiceScriptableObject objectPoolingServiceData)
     {
-        MainEnemyPool = new EnemyPool(objectPoolServiceData.EnemyPrefabsList, objectPoolServiceData.MaxEnemies);
-        XpPool = new XpPickupPool(objectPoolServiceData.XpPrefab, objectPoolServiceData.MaxXps); 
+        MainEnemyPool = new EnemyPool(objectPoolingServiceData.EnemyPrefabsList, objectPoolingServiceData.MaxEnemies);
+        XpPool = new XpPickupPool(objectPoolingServiceData.XpPrefab, objectPoolingServiceData.MaxXps); 
     }
 }

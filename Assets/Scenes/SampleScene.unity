@@ -8193,7 +8193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySpawnServiceScriptableObject: {fileID: 11400000, guid: f1ca32510dc435b45910082b056b24bb, type: 2}
-  objectPoolServiceScriptableObject: {fileID: 11400000, guid: 805103fb2ece8fb4cbcc574211ec2f71, type: 2}
+  objectPoolingServiceScriptableObject: {fileID: 11400000, guid: 3bdcad71f813acf4aa33fed2caa386b1, type: 2}
   pickupServiceScriptableObject: {fileID: 11400000, guid: 388464d70b83cf14a99a6a81f3bb5f33, type: 2}
   PlayerController: {fileID: 2848921975344159100}
   PlayerWeaponController: {fileID: 2848921975344159104}

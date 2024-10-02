@@ -6,8 +6,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "ObjectPoolServiceScriptableObject", menuName = "ScriptableObject/ObjectPoolService")]
-public class ObjectPoolServiceScriptableObject : ScriptableObject
+[CreateAssetMenu(fileName = "ObjectPoolingServiceScriptableObject", menuName = "ScriptableObject/ObjectPoolingService")]
+public class ObjectPoolingServiceScriptableObject : ScriptableObject
 {
     [FormerlySerializedAs("EnemyPrefabs")] public List<EnemyController> EnemyPrefabsList;
     public int MaxEnemies;

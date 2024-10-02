@@ -11,7 +11,7 @@ public class GameManager : StateMachine
     
     [Header("Scriptable Objects")]
     [SerializeField] private EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject;
-    [SerializeField] private ObjectPoolServiceScriptableObject objectPoolServiceScriptableObject;
+    [FormerlySerializedAs("objectPoolServiceScriptableObject")] [SerializeField] private ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject;
     [SerializeField] private PickupServiceScriptableObject pickupServiceScriptableObject;
     
     [Header("Script References")]
@@ -43,7 +43,7 @@ public class GameManager : StateMachine
     private void InitializeServices()
     {
         EventService = new EventService();
-        ObjectPoolingService = new ObjectPoolingService(objectPoolServiceScriptableObject);
+        ObjectPoolingService = new ObjectPoolingService(objectPoolingServiceScriptableObject);
         enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
         pickupSpawnService = new PickupSpawnService();
         uiService.Init();

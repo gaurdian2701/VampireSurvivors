@@ -5,6 +5,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
 
 public class EnemyCreatorEditor : EditorWindow
 {
@@ -21,7 +22,8 @@ public class EnemyCreatorEditor : EditorWindow
     private string enemyEditorScriptName = "[ENEMY CREATOR] - ";
     private string enemyPrefabFolderPath = "Assets/Resources/Enemies/";
     private string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
-    private string baseEnemyPrefabPath = "Assets/Resources/Enemies/Merfolk_Enemy.prefab";
+    private string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
+    private string baseEnemyPrefabPath = "Enemies/Merfolk_Enemy";
 
     [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
     public static void ShowWindow()
@@ -71,7 +73,7 @@ public class EnemyCreatorEditor : EditorWindow
     {
         if (string.IsNullOrEmpty(enemyNameField.value))
         {
-            Debug.Log(enemyEditorScriptName + " CANNOT CREATE ENEMY WITH NO NAME");
+            Debug.LogError(enemyEditorScriptName + " CANNOT CREATE ENEMY WITH NO NAME");
             return;
         }
         
@@ -81,6 +83,12 @@ public class EnemyCreatorEditor : EditorWindow
             return;
         }
         
+        if (AssetDatabase.FindAssets("t:prefab" + " " + enemyNameField.value, new[] { enemyPrefabFolderPath })
+                .Length != 0)
+        {
+            Debug.LogError(enemyEditorScriptName + " FILE WITH SAME NAME ALREADY EXISTS");
+            return;
+        }
         GenerateEnemy();
     }
 
@@ -92,7 +100,9 @@ public class EnemyCreatorEditor : EditorWindow
         
         InitializeEnemyData(enemyData);
         AssetDatabase.CreateAsset(enemyData, assetPath);
-        EditorGUIUtility.PingObject(CreateEnemyPrefab(enemyData));
+        GameObject newlyCreatedEnemy = CreateEnemyPrefab(enemyData);
+        UpdatePoolingService(newlyCreatedEnemy);
+        EditorGUIUtility.PingObject(newlyCreatedEnemy);
     }
 
     private void InitializeEnemyData(EnemyScriptableObject enemyData)
@@ -110,11 +120,39 @@ public class EnemyCreatorEditor : EditorWindow
 
     private GameObject CreateEnemyPrefab(EnemyScriptableObject enemyData)
     {
-        GameObject baseEnemy =
-            (GameObject)AssetDatabase.LoadAssetAtPath(baseEnemyPrefabPath, typeof(GameObject));
-        string otherEnemyPath = AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
-        GameObject newlyCreatedEnemy = PrefabUtility.SaveAsPrefabAsset(baseEnemy, otherEnemyPath);
+        GameObject baseEnemy = Resources.Load<GameObject>(baseEnemyPrefabPath);
+        Debug.Log(baseEnemy);
+        string newlyCreatedEnemyPath = AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
+        GameObject newlyCreatedEnemy = PrefabUtility.SaveAsPrefabAsset(baseEnemy, newlyCreatedEnemyPath);
         newlyCreatedEnemy.GetComponent<EnemyController>().InitializeEnemyData(enemyData);
         return newlyCreatedEnemy;
+    }
+
+    private void UpdatePoolingService(GameObject newlyCreatedEnemy)
+    {
+        if (File.Exists(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset"))
+        {
+            ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject = 
+                AssetDatabase.LoadAssetAtPath<ObjectPoolingServiceScriptableObject>(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset");
+            UpdateDataInPoolingScriptableObject(objectPoolingServiceScriptableObject, newlyCreatedEnemy);
+        }
+        else
+            CreateNewObjectPoolingServiceScriptableObject(newlyCreatedEnemy);
+    }
+
+    private void CreateNewObjectPoolingServiceScriptableObject(GameObject newlyCreatedEnemy)
+    {
+        ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject = CreateInstance<ObjectPoolingServiceScriptableObject>();
+        string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset");
+        UpdateDataInPoolingScriptableObject(objectPoolingServiceScriptableObject, newlyCreatedEnemy);
+        AssetDatabase.CreateAsset(objectPoolingServiceScriptableObject, newlyCreatedPoolingScriptableObjectPath);
+    }
+
+    private void UpdateDataInPoolingScriptableObject(ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject, GameObject newlyCreatedEnemy)
+    {
+        objectPoolingServiceScriptableObject.EnemyPrefabsList.Add(newlyCreatedEnemy.GetComponent<EnemyController>());
+        EditorUtility.SetDirty(objectPoolingServiceScriptableObject);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 }
