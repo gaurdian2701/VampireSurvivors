@@ -39,10 +39,8 @@ public class EnemyController : Character, IPausable
 
     public void InitializeEnemyData(EnemyScriptableObject enemyData)
     {
-        Debug.Log("Initializing the enemy data");
         this.enemyData = enemyData;
     }
-
     private void Awake()
     {
         Init(enemyData.EnemyMaxHealth, enemyData.EnemySpeed);
@@ -85,6 +83,8 @@ public class EnemyController : Character, IPausable
         GameManager.Instance.EventService.OnGameEnteredPauseState -= Pause;
         GameManager.Instance.EventService.OnGameEnteredPlayState -= Resume;
     }
+
+    public Sprite GetEnemySprite() => enemySpriteRenderer.sprite;
 
     public void Pause() => enemyPaused = true;
 

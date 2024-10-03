@@ -15,8 +15,6 @@ MonoBehaviour:
   EnemyPrefabsList:
   - {fileID: 5201406064040359947, guid: b83fb5ccf17fa5a4fbd804d18c9f3468, type: 3}
   - {fileID: 5201406064040359947, guid: 090dfefb23c28a649aabafb53e48f3b0, type: 3}
-  - {fileID: 5201406064040359947, guid: 8efbd47bb0677d04d8751218590d3278, type: 3}
-  - {fileID: 5201406064040359947, guid: 8efbd47bb0677d04d8751218590d3278, type: 3}
   MaxEnemies: 30
   XpPrefab: {fileID: 8567430502743619741, guid: 34050efd03f279e4d813b16fb28f7a91, type: 3}
   MaxXps: 200

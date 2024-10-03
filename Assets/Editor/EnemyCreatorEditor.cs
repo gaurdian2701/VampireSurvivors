@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -11,7 +12,8 @@ using Object = UnityEngine.Object;
 public class EnemyCreatorEditor : EditorWindow
 {
     
-    private Button button;
+    private Button createNewEnemyButton;
+    private Button removeExistingEnemyButton;
     private TextField enemyNameField;
     private DropdownField enemyMovementTypeDropdownField;
     private IntegerField maxHealthField;
@@ -19,13 +21,23 @@ public class EnemyCreatorEditor : EditorWindow
     private FloatField enemySpeedField;
     private FloatField enemyStoppingDistanceField;
     private ObjectField spriteField;
-    private Image spriteImage;
+    private Image imageForNewEnemy;
+    private Image imageForExistingEnemy;
+    private ListView enemyListView;
 
-    private readonly string enemyEditorScriptName = "[ENEMY CREATOR] - ";
-    private readonly string enemyPrefabFolderPath = "Assets/Resources/Enemies/";
-    private readonly string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
-    private readonly string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
-    private readonly string baseEnemyPrefabPath = "Enemies/Merfolk_Enemy";
+    private const string enemyEditorScriptName = "[ENEMY CREATOR] - ";
+    private const string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
+    private const string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
+    private const string enemyPrefabResourcesPath = "Enemies/";
+    private const string enemyPrefabFolderPath = "Assets/Resources/" + enemyPrefabResourcesPath;
+    private const int listViewElementsSize = 30;
+    private const int labelBorderSize = 5;
+    private const int imageBorderSize = 20;
+    private const int imageHeight = 150;
+    private const int splitViewWidth = 250;
+
+    private List<GameObject> enemiesLoaded;
+    private string[] enemyNames;
 
     [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
     public static void ShowWindow()
@@ -37,9 +49,13 @@ public class EnemyCreatorEditor : EditorWindow
     private void CreateGUI()
     {
         VisualElement root = rootVisualElement;
-        Box box = new Box();
-        Label label = new Label("ENEMY CREATOR");
-        label.transform.scale = new Vector3(1, 1, 0);
+        Box leftPaneBox = new Box();
+        Box rightPaneBox = new Box();
+        TwoPaneSplitView twoPaneSplitView = new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
+        Label leftPaneLabel = new Label("ENEMY CREATOR");
+        Label rightPaneLabel = new Label("ENEMY LIST");
+        StyliseLabel(ref leftPaneLabel);
+        StyliseLabel(ref rightPaneLabel);
 
         enemyNameField = new TextField("Enemy Name");
 
@@ -53,33 +69,89 @@ public class EnemyCreatorEditor : EditorWindow
         enemyStoppingDistanceField = new FloatField("EnemyStoppingDistance");
         
         spriteField = new ObjectField("Enemy Sprite");
-        
-        spriteImage = new Image();
-        spriteImage.scaleMode = ScaleMode.ScaleToFit;
-        
-        button = new Button();
-        button.text = "Create Enemy";
-        button.clicked += CreateEnemy;
         spriteField.RegisterValueChangedCallback(GetSpritePreview);
+        
+        imageForNewEnemy = new Image();
+        imageForExistingEnemy = new Image();
+        StyliseImage(ref imageForNewEnemy);
+        StyliseImage(ref imageForExistingEnemy);
+        
+        createNewEnemyButton = new Button();
+        createNewEnemyButton.text = "Create Enemy";
+        createNewEnemyButton.clicked += CreateEnemy;
 
-        box.Add(enemyNameField);
-        box.Add(spriteField);
-        box.Add(maxHealthField);
-        box.Add(enemyDamageField);
-        box.Add(enemySpeedField);
-        box.Add(enemyStoppingDistanceField);
-        box.Add(enemyMovementTypeDropdownField);
-        box.Add(spriteImage);
-        box.Add(button);
+        removeExistingEnemyButton = new Button();
+        removeExistingEnemyButton.text = "Remove Enemy";
+        removeExistingEnemyButton.clicked += RemoveEnemy;
+        
+        enemyListView = new ListView();
+        RefreshEnemyListData();
+        ConfigureListView(ref enemyListView);
+        enemyListView.style.flexGrow = 1;
+        enemyListView.selectionChanged += EnemySelectionChanged;
 
-        root.Add(label);
-        root.Add(box);
+        leftPaneBox.Add(leftPaneLabel);
+        leftPaneBox.Add(enemyNameField);
+        leftPaneBox.Add(spriteField);
+        leftPaneBox.Add(maxHealthField);
+        leftPaneBox.Add(enemyDamageField);
+        leftPaneBox.Add(enemySpeedField);
+        leftPaneBox.Add(enemyStoppingDistanceField);
+        leftPaneBox.Add(enemyMovementTypeDropdownField);
+        leftPaneBox.Add(imageForNewEnemy);
+        leftPaneBox.Add(createNewEnemyButton);
+        
+        rightPaneBox.Add(rightPaneLabel);
+        rightPaneBox.Add(enemyListView);
+        rightPaneBox.Add(removeExistingEnemyButton);
+        rightPaneBox.Add(imageForExistingEnemy);
+        
+        twoPaneSplitView.Add(leftPaneBox);
+        twoPaneSplitView.Add(rightPaneBox);
+        
+        root.Add(twoPaneSplitView);
     }
 
-    private void GetSpritePreview(ChangeEvent<Object> evt)
+    private void StyliseLabel(ref Label label)
     {
-        spriteImage.sprite = evt.newValue as Sprite;
+        label.style.borderTopWidth = labelBorderSize;
+        label.style.borderBottomWidth = labelBorderSize;
+        label.style.color = Color.cyan;
+        label.style.unityFontStyleAndWeight = FontStyle.Bold;
     }
+
+    private void StyliseImage(ref Image image)
+    {
+        image.scaleMode = ScaleMode.ScaleToFit;
+        image.style.height = imageHeight;
+        image.style.borderBottomWidth = imageBorderSize;
+    }
+
+    private void RefreshEnemyListData()
+    {
+        enemiesLoaded = Resources.LoadAll<GameObject>(enemyPrefabResourcesPath).ToList();
+        enemyNames = new string[enemiesLoaded.Count];
+        for(int i = 0; i < enemyNames.Length; i++)
+            enemyNames[i] = enemiesLoaded[i].name;
+        enemyListView.itemsSource = enemiesLoaded;
+    }
+
+    private void ConfigureListView(ref ListView listView)
+    {
+        Func<VisualElement> makeItem = () => new Label();
+        Action<VisualElement, int> bindItem = (elementToBeAdded, boundItemIndexInList) =>
+            (elementToBeAdded as Label).text = enemyNames[boundItemIndexInList];
+
+        listView = new ListView(enemyNames, listViewElementsSize, makeItem, bindItem);
+    }
+
+    private void GetSpritePreview(ChangeEvent<Object> evt) => ChangeSprite(ref imageForNewEnemy, evt.newValue as Sprite);
+
+    private void EnemySelectionChanged(IEnumerable<object> selectedObjects) => ChangeSprite(ref imageForExistingEnemy,
+        enemiesLoaded[enemyListView.selectedIndex].GetComponent<EnemyController>().GetEnemySprite());
+    
+    private void ChangeSprite(ref Image spriteToBeChanged, Sprite newSprite) => spriteToBeChanged.sprite = newSprite;
+    
     private void CreateEnemy()
     {
         if (string.IsNullOrEmpty(enemyNameField.value))
@@ -114,6 +186,7 @@ public class EnemyCreatorEditor : EditorWindow
         GameObject newlyCreatedEnemy = CreateEnemyPrefab(enemyData);
         UpdatePoolingService(newlyCreatedEnemy);
         EditorGUIUtility.PingObject(newlyCreatedEnemy);
+        RefreshEnemyListData();
     }
 
     private void InitializeEnemyData(EnemyScriptableObject enemyData)
@@ -131,12 +204,16 @@ public class EnemyCreatorEditor : EditorWindow
 
     private GameObject CreateEnemyPrefab(EnemyScriptableObject enemyData)
     {
-        GameObject baseEnemy = Resources.Load<GameObject>(baseEnemyPrefabPath);
-        Debug.Log(baseEnemy);
+        GameObject baseEnemy = enemiesLoaded[0];
         string newlyCreatedEnemyPath = AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
         GameObject newlyCreatedEnemy = PrefabUtility.SaveAsPrefabAsset(baseEnemy, newlyCreatedEnemyPath);
         newlyCreatedEnemy.GetComponent<EnemyController>().InitializeEnemyData(enemyData);
         return newlyCreatedEnemy;
+    }
+
+    private void RemoveEnemy()
+    {
+        
     }
 
     private void UpdatePoolingService(GameObject newlyCreatedEnemy)
