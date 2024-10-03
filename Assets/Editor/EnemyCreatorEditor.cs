@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
+using Directory = System.IO.Directory;
 using Object = UnityEngine.Object;
 
 public class EnemyCreatorEditor : EditorWindow
@@ -36,7 +37,9 @@ public class EnemyCreatorEditor : EditorWindow
     private const int imageHeight = 150;
     private const int splitViewWidth = 250;
 
-    private List<GameObject> enemiesLoaded;
+    private List<GameObject> enemyPrefabsList;
+    private List<EnemyScriptableObject> enemyDataList = new List<EnemyScriptableObject>();
+    private ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject;
     private string[] enemyNames;
 
     [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
@@ -48,6 +51,10 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void CreateGUI()
     {
+        objectPoolingServiceScriptableObject = 
+            AssetDatabase.LoadAssetAtPath<ObjectPoolingServiceScriptableObject>(objectPoolingScriptableObjectFolderPath
+                + "ObjectPoolingServiceScriptableObject.asset");
+        
         VisualElement root = rootVisualElement;
         Box leftPaneBox = new Box();
         Box rightPaneBox = new Box();
@@ -85,7 +92,7 @@ public class EnemyCreatorEditor : EditorWindow
         removeExistingEnemyButton.clicked += RemoveEnemy;
         
         enemyListView = new ListView();
-        RefreshEnemyListData();
+        RefreshEnemyData();
         ConfigureListView(ref enemyListView);
         enemyListView.style.flexGrow = 1;
         enemyListView.selectionChanged += EnemySelectionChanged;
@@ -127,13 +134,23 @@ public class EnemyCreatorEditor : EditorWindow
         image.style.borderBottomWidth = imageBorderSize;
     }
 
-    private void RefreshEnemyListData()
+    private void RefreshEnemyData()
     {
-        enemiesLoaded = Resources.LoadAll<GameObject>(enemyPrefabResourcesPath).ToList();
-        enemyNames = new string[enemiesLoaded.Count];
-        for(int i = 0; i < enemyNames.Length; i++)
-            enemyNames[i] = enemiesLoaded[i].name;
-        enemyListView.itemsSource = enemiesLoaded;
+        enemyPrefabsList = Resources.LoadAll<GameObject>(enemyPrefabResourcesPath).ToList();
+        enemyNames = new string[enemyPrefabsList.Count];
+        for (int i = 0; i < enemyNames.Length; i++)
+            enemyNames[i] = enemyPrefabsList[i].name;
+        enemyListView.itemsSource = enemyNames;
+
+        string[] loadedEnemyDataPaths = Directory.GetFiles(enemyScriptableObjectFolderPath, "*.asset");
+        enemyDataList = new List<EnemyScriptableObject>();
+
+        for (int i = 0; i < loadedEnemyDataPaths.Length; i++)
+        {
+            EnemyScriptableObject enemyLoaded =
+                AssetDatabase.LoadAssetAtPath<EnemyScriptableObject>(loadedEnemyDataPaths[i]);
+            enemyDataList.Add(enemyLoaded);
+        }
     }
 
     private void ConfigureListView(ref ListView listView)
@@ -148,7 +165,7 @@ public class EnemyCreatorEditor : EditorWindow
     private void GetSpritePreview(ChangeEvent<Object> evt) => ChangeSprite(ref imageForNewEnemy, evt.newValue as Sprite);
 
     private void EnemySelectionChanged(IEnumerable<object> selectedObjects) => ChangeSprite(ref imageForExistingEnemy,
-        enemiesLoaded[enemyListView.selectedIndex].GetComponent<EnemyController>().GetEnemySprite());
+        enemyPrefabsList[enemyListView.selectedIndex].GetComponent<EnemyController>().GetEnemySprite());
     
     private void ChangeSprite(ref Image spriteToBeChanged, Sprite newSprite) => spriteToBeChanged.sprite = newSprite;
     
@@ -186,7 +203,7 @@ public class EnemyCreatorEditor : EditorWindow
         GameObject newlyCreatedEnemy = CreateEnemyPrefab(enemyData);
         UpdatePoolingService(newlyCreatedEnemy);
         EditorGUIUtility.PingObject(newlyCreatedEnemy);
-        RefreshEnemyListData();
+        RefreshEnemyData();
     }
 
     private void InitializeEnemyData(EnemyScriptableObject enemyData)
@@ -204,7 +221,7 @@ public class EnemyCreatorEditor : EditorWindow
 
     private GameObject CreateEnemyPrefab(EnemyScriptableObject enemyData)
     {
-        GameObject baseEnemy = enemiesLoaded[0];
+        GameObject baseEnemy = enemyPrefabsList[0];
         string newlyCreatedEnemyPath = AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
         GameObject newlyCreatedEnemy = PrefabUtility.SaveAsPrefabAsset(baseEnemy, newlyCreatedEnemyPath);
         newlyCreatedEnemy.GetComponent<EnemyController>().InitializeEnemyData(enemyData);
@@ -213,17 +230,16 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void RemoveEnemy()
     {
-        
+        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(enemyPrefabsList[enemyListView.selectedIndex]));
+        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(enemyDataList[enemyListView.selectedIndex]));
+        RefreshEnemyData();
+        UpdateDataInPoolingScriptableObject();
     }
 
     private void UpdatePoolingService(GameObject newlyCreatedEnemy)
     {
-        if (File.Exists(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset"))
-        {
-            ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject = 
-                AssetDatabase.LoadAssetAtPath<ObjectPoolingServiceScriptableObject>(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset");
-            UpdateDataInPoolingScriptableObject(objectPoolingServiceScriptableObject, newlyCreatedEnemy);
-        }
+        if (System.IO.File.Exists(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset"))
+            UpdateDataInPoolingScriptableObject();
         else
             CreateNewObjectPoolingServiceScriptableObject(newlyCreatedEnemy);
     }
@@ -232,14 +248,16 @@ public class EnemyCreatorEditor : EditorWindow
     {
         //Havent completed this functionality yet
         ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject = CreateInstance<ObjectPoolingServiceScriptableObject>();
-        string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset");
-        UpdateDataInPoolingScriptableObject(objectPoolingServiceScriptableObject, newlyCreatedEnemy);
+        string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(objectPoolingScriptableObjectFolderPath
+            + "ObjectPoolingServiceScriptableObject.asset");
+        UpdateDataInPoolingScriptableObject();
         AssetDatabase.CreateAsset(objectPoolingServiceScriptableObject, newlyCreatedPoolingScriptableObjectPath);
     }
 
-    private void UpdateDataInPoolingScriptableObject(ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject, GameObject newlyCreatedEnemy)
+    private void UpdateDataInPoolingScriptableObject()
     {
-        objectPoolingServiceScriptableObject.EnemyPrefabsList.Add(newlyCreatedEnemy.GetComponent<EnemyController>());
+        objectPoolingServiceScriptableObject.EnemyPrefabsList =
+            Resources.LoadAll<EnemyController>(enemyPrefabResourcesPath).ToList();
         EditorUtility.SetDirty(objectPoolingServiceScriptableObject);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
