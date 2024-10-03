@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
+using Object = UnityEngine.Object;
 
 public class EnemyCreatorEditor : EditorWindow
 {
@@ -18,12 +19,13 @@ public class EnemyCreatorEditor : EditorWindow
     private FloatField enemySpeedField;
     private FloatField enemyStoppingDistanceField;
     private ObjectField spriteField;
+    private Image spriteImage;
 
-    private string enemyEditorScriptName = "[ENEMY CREATOR] - ";
-    private string enemyPrefabFolderPath = "Assets/Resources/Enemies/";
-    private string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
-    private string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
-    private string baseEnemyPrefabPath = "Enemies/Merfolk_Enemy";
+    private readonly string enemyEditorScriptName = "[ENEMY CREATOR] - ";
+    private readonly string enemyPrefabFolderPath = "Assets/Resources/Enemies/";
+    private readonly string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
+    private readonly string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
+    private readonly string baseEnemyPrefabPath = "Enemies/Merfolk_Enemy";
 
     [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
     public static void ShowWindow()
@@ -52,9 +54,13 @@ public class EnemyCreatorEditor : EditorWindow
         
         spriteField = new ObjectField("Enemy Sprite");
         
+        spriteImage = new Image();
+        spriteImage.scaleMode = ScaleMode.ScaleToFit;
+        
         button = new Button();
         button.text = "Create Enemy";
         button.clicked += CreateEnemy;
+        spriteField.RegisterValueChangedCallback(GetSpritePreview);
 
         box.Add(enemyNameField);
         box.Add(spriteField);
@@ -63,12 +69,17 @@ public class EnemyCreatorEditor : EditorWindow
         box.Add(enemySpeedField);
         box.Add(enemyStoppingDistanceField);
         box.Add(enemyMovementTypeDropdownField);
+        box.Add(spriteImage);
         box.Add(button);
 
         root.Add(label);
         root.Add(box);
     }
 
+    private void GetSpritePreview(ChangeEvent<Object> evt)
+    {
+        spriteImage.sprite = evt.newValue as Sprite;
+    }
     private void CreateEnemy()
     {
         if (string.IsNullOrEmpty(enemyNameField.value))
@@ -142,6 +153,7 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void CreateNewObjectPoolingServiceScriptableObject(GameObject newlyCreatedEnemy)
     {
+        //Havent completed this functionality yet
         ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject = CreateInstance<ObjectPoolingServiceScriptableObject>();
         string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset");
         UpdateDataInPoolingScriptableObject(objectPoolingServiceScriptableObject, newlyCreatedEnemy);
