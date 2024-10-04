@@ -17,7 +17,7 @@ public class EnemyController : Character, IPausable
     [SerializeField] private Animator animator;
     
     
-    private EnemyMovement movementController;
+    public EnemyMovement movementController;
     
     private Transform playerTransform;
     
@@ -36,11 +36,7 @@ public class EnemyController : Character, IPausable
     
     private const float knockBackDuration = 2.5f;
     private const int milliseconds = 100;
-
-    public void InitializeEnemyData(EnemyScriptableObject enemyData)
-    {
-        this.enemyData = enemyData;
-    }
+    
     private void Awake()
     {
         Init(enemyData.EnemyMaxHealth, enemyData.EnemySpeed);
@@ -83,8 +79,12 @@ public class EnemyController : Character, IPausable
         GameManager.Instance.EventService.OnGameEnteredPauseState -= Pause;
         GameManager.Instance.EventService.OnGameEnteredPlayState -= Resume;
     }
-
+    public void InitializeEnemyData(EnemyScriptableObject enemyData)
+    {
+        this.enemyData = enemyData;
+    }
     public Sprite GetEnemySprite() => enemySpriteRenderer.sprite;
+    public EnemyMovementType GetEnemyMovementType() => enemyData.EnemyMovementType;
 
     public void Pause() => enemyPaused = true;
 

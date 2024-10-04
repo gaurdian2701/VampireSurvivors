@@ -10,15 +10,18 @@ public abstract class EnemyMovement
     protected float enemySpeedModifier;
     protected Transform playerTransform;
     protected Transform enemyTransform;
+    protected float sinusoidalOffset;
 
     public EnemyMovement()
     {
         SetEnemySpeedModifier(1f);
+        SetEnemySinusoidalOffset(0f);
     }
 
     public abstract void UpdatePosition();
     public void SetCurrentEnemySpeed(float someSpeed) => currentEnemySpeed = someSpeed;
     public void SetEnemySpeedModifier(float someModifier) => enemySpeedModifier = someModifier;
+    public void SetEnemySinusoidalOffset(float someOffset) => sinusoidalOffset = someOffset;
 
     protected Vector3 GetDirectionToPlayerVector()
     {

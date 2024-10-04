@@ -12,7 +12,10 @@ using Object = UnityEngine.Object;
 
 public class EnemyCreatorEditor : EditorWindow
 {
-    
+    private Box leftPaneBox;
+    private Box rightPaneBox;
+    private Label leftPaneLabel;
+    private Label rightPaneLabel;
     private Button createNewEnemyButton;
     private Button removeExistingEnemyButton;
     private TextField enemyNameField;
@@ -29,8 +32,9 @@ public class EnemyCreatorEditor : EditorWindow
     private const string enemyEditorScriptName = "[ENEMY CREATOR] - ";
     private const string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
     private const string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
-    private const string enemyPrefabResourcesPath = "Enemies/";
-    private const string enemyPrefabFolderPath = "Assets/Resources/" + enemyPrefabResourcesPath;
+    private const string enemyFolderNamePath = "Enemies/";
+    private const string enemyPrefabFolderPath = "Assets/Resources/" + enemyFolderNamePath;
+    private const string enemyArtFolderPath = "Assets/KeyArt/" + enemyFolderNamePath;
     private const int listViewElementsSize = 30;
     private const int labelBorderSize = 5;
     private const int imageBorderSize = 20;
@@ -51,16 +55,17 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void CreateGUI()
     {
-        objectPoolingServiceScriptableObject = 
+        objectPoolingServiceScriptableObject =
             AssetDatabase.LoadAssetAtPath<ObjectPoolingServiceScriptableObject>(objectPoolingScriptableObjectFolderPath
                 + "ObjectPoolingServiceScriptableObject.asset");
-        
+
         VisualElement root = rootVisualElement;
-        Box leftPaneBox = new Box();
-        Box rightPaneBox = new Box();
-        TwoPaneSplitView twoPaneSplitView = new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
-        Label leftPaneLabel = new Label("ENEMY CREATOR");
-        Label rightPaneLabel = new Label("ENEMY LIST");
+        leftPaneBox = new Box();
+        rightPaneBox = new Box();
+        TwoPaneSplitView twoPaneSplitView =
+            new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
+        leftPaneLabel = new Label("ENEMY CREATOR");
+        rightPaneLabel = new Label("ENEMY LIST");
         StyliseLabel(ref leftPaneLabel);
         StyliseLabel(ref rightPaneLabel);
 
@@ -74,15 +79,15 @@ public class EnemyCreatorEditor : EditorWindow
 
         enemySpeedField = new FloatField("Enemy Speed");
         enemyStoppingDistanceField = new FloatField("EnemyStoppingDistance");
-        
+
         spriteField = new ObjectField("Enemy Sprite");
         spriteField.RegisterValueChangedCallback(GetSpritePreview);
-        
+
         imageForNewEnemy = new Image();
         imageForExistingEnemy = new Image();
         StyliseImage(ref imageForNewEnemy);
         StyliseImage(ref imageForExistingEnemy);
-        
+
         createNewEnemyButton = new Button();
         createNewEnemyButton.text = "Create Enemy";
         createNewEnemyButton.clicked += CreateEnemy;
@@ -90,13 +95,24 @@ public class EnemyCreatorEditor : EditorWindow
         removeExistingEnemyButton = new Button();
         removeExistingEnemyButton.text = "Remove Enemy";
         removeExistingEnemyButton.clicked += RemoveEnemy;
-        
+
         enemyListView = new ListView();
         RefreshEnemyData();
         ConfigureListView(ref enemyListView);
         enemyListView.style.flexGrow = 1;
         enemyListView.selectionChanged += EnemySelectionChanged;
+        
+        AddLeftPaneVisualElements();
+        AddRightPaneVisualElements();
 
+        twoPaneSplitView.Add(leftPaneBox);
+        twoPaneSplitView.Add(rightPaneBox);
+
+        root.Add(twoPaneSplitView);
+    }
+
+    private void AddLeftPaneVisualElements()
+    {
         leftPaneBox.Add(leftPaneLabel);
         leftPaneBox.Add(enemyNameField);
         leftPaneBox.Add(spriteField);
@@ -107,16 +123,14 @@ public class EnemyCreatorEditor : EditorWindow
         leftPaneBox.Add(enemyMovementTypeDropdownField);
         leftPaneBox.Add(imageForNewEnemy);
         leftPaneBox.Add(createNewEnemyButton);
-        
+    }
+
+    private void AddRightPaneVisualElements()
+    {
         rightPaneBox.Add(rightPaneLabel);
         rightPaneBox.Add(enemyListView);
         rightPaneBox.Add(removeExistingEnemyButton);
         rightPaneBox.Add(imageForExistingEnemy);
-        
-        twoPaneSplitView.Add(leftPaneBox);
-        twoPaneSplitView.Add(rightPaneBox);
-        
-        root.Add(twoPaneSplitView);
     }
 
     private void StyliseLabel(ref Label label)
@@ -136,7 +150,7 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void RefreshEnemyData()
     {
-        enemyPrefabsList = Resources.LoadAll<GameObject>(enemyPrefabResourcesPath).ToList();
+        enemyPrefabsList = Resources.LoadAll<GameObject>(enemyFolderNamePath).ToList();
         enemyNames = new string[enemyPrefabsList.Count];
         for (int i = 0; i < enemyNames.Length; i++)
             enemyNames[i] = enemyPrefabsList[i].name;
@@ -151,6 +165,8 @@ public class EnemyCreatorEditor : EditorWindow
                 AssetDatabase.LoadAssetAtPath<EnemyScriptableObject>(loadedEnemyDataPaths[i]);
             enemyDataList.Add(enemyLoaded);
         }
+
+        UpdateDataInPoolingScriptableObject();
     }
 
     private void ConfigureListView(ref ListView listView)
@@ -162,13 +178,18 @@ public class EnemyCreatorEditor : EditorWindow
         listView = new ListView(enemyNames, listViewElementsSize, makeItem, bindItem);
     }
 
-    private void GetSpritePreview(ChangeEvent<Object> evt) => ChangeSprite(ref imageForNewEnemy, evt.newValue as Sprite);
+    private void GetSpritePreview(ChangeEvent<Object> evt)
+    {
+        ChangeSprite(ref imageForNewEnemy, evt.newValue as Sprite);
+        Object enemyArt = AssetDatabase.LoadAssetAtPath<Object>(enemyArtFolderPath + "raven.png");
+        EditorGUIUtility.PingObject(enemyArt);
+    }
 
     private void EnemySelectionChanged(IEnumerable<object> selectedObjects) => ChangeSprite(ref imageForExistingEnemy,
         enemyPrefabsList[enemyListView.selectedIndex].GetComponent<EnemyController>().GetEnemySprite());
-    
+
     private void ChangeSprite(ref Image spriteToBeChanged, Sprite newSprite) => spriteToBeChanged.sprite = newSprite;
-    
+
     private void CreateEnemy()
     {
         if (string.IsNullOrEmpty(enemyNameField.value))
@@ -176,19 +197,20 @@ public class EnemyCreatorEditor : EditorWindow
             Debug.LogError(enemyEditorScriptName + " CANNOT CREATE ENEMY WITH NO NAME");
             return;
         }
-        
+
         if (spriteField.value as Sprite == null)
         {
             Debug.LogError(enemyEditorScriptName + " CANNOT CREATE ENEMY WITH NO/INVALID SPRITE");
             return;
         }
-        
+
         if (AssetDatabase.FindAssets("t:prefab" + " " + enemyNameField.value, new[] { enemyPrefabFolderPath })
                 .Length != 0)
         {
             Debug.LogError(enemyEditorScriptName + " FILE WITH SAME NAME ALREADY EXISTS");
             return;
         }
+
         GenerateEnemy();
     }
 
@@ -197,7 +219,7 @@ public class EnemyCreatorEditor : EditorWindow
         EnemyScriptableObject enemyData = CreateInstance<EnemyScriptableObject>();
         string assetPath =
             AssetDatabase.GenerateUniqueAssetPath(enemyScriptableObjectFolderPath + enemyNameField.text + ".asset");
-        
+
         InitializeEnemyData(enemyData);
         AssetDatabase.CreateAsset(enemyData, assetPath);
         GameObject newlyCreatedEnemy = CreateEnemyPrefab(enemyData);
@@ -222,7 +244,8 @@ public class EnemyCreatorEditor : EditorWindow
     private GameObject CreateEnemyPrefab(EnemyScriptableObject enemyData)
     {
         GameObject baseEnemy = enemyPrefabsList[0];
-        string newlyCreatedEnemyPath = AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
+        string newlyCreatedEnemyPath =
+            AssetDatabase.GenerateUniqueAssetPath(enemyPrefabFolderPath + enemyData.name + ".prefab");
         GameObject newlyCreatedEnemy = PrefabUtility.SaveAsPrefabAsset(baseEnemy, newlyCreatedEnemyPath);
         newlyCreatedEnemy.GetComponent<EnemyController>().InitializeEnemyData(enemyData);
         return newlyCreatedEnemy;
@@ -238,7 +261,8 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void UpdatePoolingService(GameObject newlyCreatedEnemy)
     {
-        if (System.IO.File.Exists(objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset"))
+        if (System.IO.File.Exists(
+                objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset"))
             UpdateDataInPoolingScriptableObject();
         else
             CreateNewObjectPoolingServiceScriptableObject(newlyCreatedEnemy);
@@ -247,8 +271,10 @@ public class EnemyCreatorEditor : EditorWindow
     private void CreateNewObjectPoolingServiceScriptableObject(GameObject newlyCreatedEnemy)
     {
         //Havent completed this functionality yet
-        ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject = CreateInstance<ObjectPoolingServiceScriptableObject>();
-        string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(objectPoolingScriptableObjectFolderPath
+        ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject =
+            CreateInstance<ObjectPoolingServiceScriptableObject>();
+        string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(
+            objectPoolingScriptableObjectFolderPath
             + "ObjectPoolingServiceScriptableObject.asset");
         UpdateDataInPoolingScriptableObject();
         AssetDatabase.CreateAsset(objectPoolingServiceScriptableObject, newlyCreatedPoolingScriptableObjectPath);
@@ -257,7 +283,7 @@ public class EnemyCreatorEditor : EditorWindow
     private void UpdateDataInPoolingScriptableObject()
     {
         objectPoolingServiceScriptableObject.EnemyPrefabsList =
-            Resources.LoadAll<EnemyController>(enemyPrefabResourcesPath).ToList();
+            Resources.LoadAll<EnemyController>(enemyFolderNamePath).ToList();
         EditorUtility.SetDirty(objectPoolingServiceScriptableObject);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
