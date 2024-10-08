@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 551571313033289954}
   m_Layer: 3
   m_Name: Merfolk_Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

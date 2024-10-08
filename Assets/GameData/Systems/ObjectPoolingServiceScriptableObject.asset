@@ -18,3 +18,5 @@ MonoBehaviour:
   MaxEnemies: 30
   XpPrefab: {fileID: 8567430502743619741, guid: 34050efd03f279e4d813b16fb28f7a91, type: 3}
   MaxXps: 200
+  ProjectilePrefab: {fileID: 8342276125804080980, guid: 1c73d5f29eda82e47a60b2a50a1a0e60, type: 3}
+  MaxProjectiles: 50

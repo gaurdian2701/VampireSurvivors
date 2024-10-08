@@ -11,11 +11,6 @@ public class AxeController : Weapon
         InitWeaponData(weaponData);
         SubscribeToEvents();
     }
-
-    ~AxeController()
-    {
-        UnsubscribeFromEvents();
-    }
     
     public override void Attack()
     {

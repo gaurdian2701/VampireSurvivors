@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponData: {fileID: 11400000, guid: 756faca2cca07f742bae9b5142f94ffd, type: 2}
-  weaponImage: {fileID: 4218049885872275005}
 --- !u!58 &9152396840844066994
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -60,7 +59,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 520
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 503

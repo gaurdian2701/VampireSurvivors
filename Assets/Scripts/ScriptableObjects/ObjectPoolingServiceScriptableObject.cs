@@ -13,6 +13,6 @@ public class ObjectPoolingServiceScriptableObject : ScriptableObject
     public int MaxEnemies;
     public GameObject XpPrefab;
     public int MaxXps;
-    
-    private string enemiesPath = "Enemies/";
+    public ProjectileController ProjectilePrefab;
+    public int MaxProjectiles;
 }

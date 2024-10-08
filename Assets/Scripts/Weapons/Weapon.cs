@@ -22,7 +22,9 @@ public class Weapon : MonoBehaviour
         BaseKnockBackForce = weaponData.KnockbackForce;
         SubscribeToEvents();
     }
-    
+
+    private void OnDestroy() => UnsubscribeFromEvents();
+
     protected void SubscribeToEvents()
     {
         GameManager.Instance.EventService.OnPlayerPressedAttackButton += Attack;

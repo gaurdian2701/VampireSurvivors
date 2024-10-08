@@ -16,7 +16,6 @@ public class EnemySpawnService : IPausable
     
     private static int currentNumberOfKillsToInitiateHorde;
     private int currentKillCountForHorde;
-    private int numberOEnemyTypes = Enum.GetNames(typeof(EnemyClass)).Length;
 
     public EnemySpawnService(EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject)
     {

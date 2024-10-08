@@ -6,9 +6,6 @@ using Random = System.Random;
 public class EnemyPool : GenericObjectPool<EnemyController>
 {
     private List<EnemyController> enemyPrefabsList;
-    private EnemyController mermanPrefab;
-    private EnemyController ravenPrefab;
-    private EnemyController currentPrefabToBeSpawned;
     
     public EnemyPool(List<EnemyController> enemyPrefabsList, int maxObjectsInPool)
     {
