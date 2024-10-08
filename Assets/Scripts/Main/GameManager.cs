@@ -16,7 +16,7 @@ public class GameManager : StateMachine
     
     [Header("Script References")]
     public PlayerController PlayerController;
-    public WeaponController PlayerWeaponController;
+    [FormerlySerializedAs("PlayerWeaponController")] public WeaponsManager playerWeaponsManager;
     public UIService uiService;
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;

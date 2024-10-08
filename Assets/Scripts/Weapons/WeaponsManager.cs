@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class WeaponController : MonoBehaviour
+public class WeaponsManager : MonoBehaviour
 {
     [FormerlySerializedAs("playerEquipmentData")] [SerializeField] private PlayerWeaponsScriptableObject playerWeaponsData;
     [SerializeField] private Transform playerTransform;

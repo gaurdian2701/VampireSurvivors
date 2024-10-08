@@ -12,6 +12,7 @@ using Object = UnityEngine.Object;
 
 public class EnemyCreatorEditor : EditorWindow
 {
+    private TwoPaneSplitView twoPaneSplitView;
     private Box leftPaneBox;
     private Box rightPaneBox;
     private Label leftPaneLabel;
@@ -30,6 +31,7 @@ public class EnemyCreatorEditor : EditorWindow
     private ListView enemyListView;
 
     private const string enemyEditorScriptName = "[ENEMY CREATOR] - ";
+    private const string enemyString = "ENEMY";
     private const string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
     private const string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
     private const string enemyFolderNamePath = "Enemies/";
@@ -46,11 +48,11 @@ public class EnemyCreatorEditor : EditorWindow
     private ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject;
     private string[] enemyNames;
 
-    [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
+    [MenuItem("Window/Custom Editors/Creator Editor")]
     public static void ShowWindow()
     {
         EnemyCreatorEditor window = GetWindow<EnemyCreatorEditor>();
-        window.titleContent = new GUIContent("Enemy Creator");
+        window.titleContent = new GUIContent("Creator");
     }
 
     private void CreateGUI()
@@ -60,9 +62,23 @@ public class EnemyCreatorEditor : EditorWindow
                 + "ObjectPoolingServiceScriptableObject.asset");
 
         VisualElement root = rootVisualElement;
+        
+        ChangeUIToEnemyCreator();
+
+        AddLeftPaneVisualElements();
+        AddRightPaneVisualElements();
+
+        twoPaneSplitView.Add(leftPaneBox);
+        twoPaneSplitView.Add(rightPaneBox);
+
+        root.Add(twoPaneSplitView);
+    }
+
+    private void ChangeUIToEnemyCreator()
+    {
         leftPaneBox = new Box();
         rightPaneBox = new Box();
-        TwoPaneSplitView twoPaneSplitView =
+        twoPaneSplitView =
             new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
         leftPaneLabel = new Label("ENEMY CREATOR");
         rightPaneLabel = new Label("ENEMY LIST");
@@ -101,14 +117,6 @@ public class EnemyCreatorEditor : EditorWindow
         ConfigureListView(ref enemyListView);
         enemyListView.style.flexGrow = 1;
         enemyListView.selectionChanged += EnemySelectionChanged;
-        
-        AddLeftPaneVisualElements();
-        AddRightPaneVisualElements();
-
-        twoPaneSplitView.Add(leftPaneBox);
-        twoPaneSplitView.Add(rightPaneBox);
-
-        root.Add(twoPaneSplitView);
     }
 
     private void AddLeftPaneVisualElements()
@@ -223,7 +231,7 @@ public class EnemyCreatorEditor : EditorWindow
         InitializeEnemyData(enemyData);
         AssetDatabase.CreateAsset(enemyData, assetPath);
         GameObject newlyCreatedEnemy = CreateEnemyPrefab(enemyData);
-        UpdatePoolingService(newlyCreatedEnemy);
+        UpdatePoolingService();
         EditorGUIUtility.PingObject(newlyCreatedEnemy);
         RefreshEnemyData();
     }
@@ -259,25 +267,13 @@ public class EnemyCreatorEditor : EditorWindow
         UpdateDataInPoolingScriptableObject();
     }
 
-    private void UpdatePoolingService(GameObject newlyCreatedEnemy)
+    private void UpdatePoolingService()
     {
         if (System.IO.File.Exists(
                 objectPoolingScriptableObjectFolderPath + "ObjectPoolingServiceScriptableObject.asset"))
             UpdateDataInPoolingScriptableObject();
         else
-            CreateNewObjectPoolingServiceScriptableObject(newlyCreatedEnemy);
-    }
-
-    private void CreateNewObjectPoolingServiceScriptableObject(GameObject newlyCreatedEnemy)
-    {
-        //Havent completed this functionality yet
-        ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject =
-            CreateInstance<ObjectPoolingServiceScriptableObject>();
-        string newlyCreatedPoolingScriptableObjectPath = AssetDatabase.GenerateUniqueAssetPath(
-            objectPoolingScriptableObjectFolderPath
-            + "ObjectPoolingServiceScriptableObject.asset");
-        UpdateDataInPoolingScriptableObject();
-        AssetDatabase.CreateAsset(objectPoolingServiceScriptableObject, newlyCreatedPoolingScriptableObjectPath);
+            Debug.LogError("");
     }
 
     private void UpdateDataInPoolingScriptableObject()

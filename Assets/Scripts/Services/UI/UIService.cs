@@ -202,7 +202,7 @@ public class UIService : MonoBehaviour
 
     public void OnUpgradeChosen(int upgradeChosen)
     {
-        GameManager.Instance.PlayerWeaponController.
+        GameManager.Instance.playerWeaponsManager.
             UpgradeWeapons((WeaponType)weaponsData[upgradeChosen], 
                 (UpgradeType)upgradesData[upgradeChosen]);   
         GameManager.Instance.EventService.InvokePlayerSelectedUpgradeEvent();

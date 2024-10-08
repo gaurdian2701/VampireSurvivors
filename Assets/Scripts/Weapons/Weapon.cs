@@ -20,7 +20,19 @@ public class Weapon : MonoBehaviour
         BaseDamage = weaponData.Damage;
         BaseAttackSpeed = weaponData.AttackSpeed;
         BaseKnockBackForce = weaponData.KnockbackForce;
+        SubscribeToEvents();
     }
+    
+    protected void SubscribeToEvents()
+    {
+        GameManager.Instance.EventService.OnPlayerPressedAttackButton += Attack;
+    }
+
+    protected void UnsubscribeFromEvents()
+    {
+        GameManager.Instance.EventService.OnPlayerPressedAttackButton -= Attack;
+    }
+
 
     public void InitializeWeaponPositionAndOrientation(Transform playerTransform, 
         Vector3 weaponLocalPositionOffset)
