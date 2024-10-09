@@ -6,19 +6,15 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.Windows;
-using Directory = System.IO.Directory;
 using Object = UnityEngine.Object;
 
-public class EnemyCreatorEditor : EditorWindow
+public class EnemyCreator
 {
-    private TwoPaneSplitView twoPaneSplitView;
-    private Box leftPaneBox;
-    private Box rightPaneBox;
-    private Label leftPaneLabel;
-    private Label rightPaneLabel;
-    private Button createNewEnemyButton;
-    private Button removeExistingEnemyButton;
+    private CreatorEditor creatorEditor;
+    private List<GameObject> enemyPrefabsList = new List<GameObject>();
+    private List<EnemyScriptableObject> enemyDataList;
+    private string[] enemyNames;
+    
     private TextField enemyNameField;
     private DropdownField enemyMovementTypeDropdownField;
     private IntegerField maxHealthField;
@@ -28,63 +24,22 @@ public class EnemyCreatorEditor : EditorWindow
     private ObjectField spriteField;
     private Image imageForNewEnemy;
     private Image imageForExistingEnemy;
-    private ListView enemyListView;
-
+    
     private const string enemyEditorScriptName = "[ENEMY CREATOR] - ";
-    private const string enemyString = "ENEMY";
     private const string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
     private const string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
     private const string enemyFolderNamePath = "Enemies/";
     private const string enemyPrefabFolderPath = "Assets/Resources/" + enemyFolderNamePath;
     private const string enemyArtFolderPath = "Assets/KeyArt/" + enemyFolderNamePath;
-    private const int listViewElementsSize = 30;
-    private const int labelBorderSize = 5;
-    private const int imageBorderSize = 20;
-    private const int imageHeight = 150;
-    private const int splitViewWidth = 250;
-
-    private List<GameObject> enemyPrefabsList;
-    private List<EnemyScriptableObject> enemyDataList = new List<EnemyScriptableObject>();
-    private ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject;
-    private string[] enemyNames;
-
-    [MenuItem("Window/Custom Editors/Creator Editor")]
-    public static void ShowWindow()
+    public EnemyCreator(CreatorEditor creatorEditor)
     {
-        EnemyCreatorEditor window = GetWindow<EnemyCreatorEditor>();
-        window.titleContent = new GUIContent("Creator");
+        this.creatorEditor = creatorEditor;
     }
 
-    private void CreateGUI()
+    public void LoadGUI()
     {
-        objectPoolingServiceScriptableObject =
-            AssetDatabase.LoadAssetAtPath<ObjectPoolingServiceScriptableObject>(objectPoolingScriptableObjectFolderPath
-                + "ObjectPoolingServiceScriptableObject.asset");
-
-        VisualElement root = rootVisualElement;
-        
-        ChangeUIToEnemyCreator();
-
-        AddLeftPaneVisualElements();
-        AddRightPaneVisualElements();
-
-        twoPaneSplitView.Add(leftPaneBox);
-        twoPaneSplitView.Add(rightPaneBox);
-
-        root.Add(twoPaneSplitView);
-    }
-
-    private void ChangeUIToEnemyCreator()
-    {
-        leftPaneBox = new Box();
-        rightPaneBox = new Box();
-        twoPaneSplitView =
-            new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
-        leftPaneLabel = new Label("ENEMY CREATOR");
-        rightPaneLabel = new Label("ENEMY LIST");
-        StyliseLabel(ref leftPaneLabel);
-        StyliseLabel(ref rightPaneLabel);
-
+        creatorEditor.leftPaneLabel.text = "ENEMY CREATOR";
+        creatorEditor.rightPaneLabel.text = "ENEMY LIST";
         enemyNameField = new TextField("Enemy Name");
 
         enemyMovementTypeDropdownField = new DropdownField("Enemy Movement Type");
@@ -101,69 +56,55 @@ public class EnemyCreatorEditor : EditorWindow
 
         imageForNewEnemy = new Image();
         imageForExistingEnemy = new Image();
-        StyliseImage(ref imageForNewEnemy);
-        StyliseImage(ref imageForExistingEnemy);
+        creatorEditor.StyliseImage(ref imageForNewEnemy);
+        creatorEditor.StyliseImage(ref imageForExistingEnemy);
+        
+        creatorEditor.createButton.text = "Create Enemy";
+        creatorEditor.createButton.clicked += CreateEnemy;
+        
+        creatorEditor.removeButton.text = "Remove Enemy";
+        creatorEditor.removeButton.clicked += RemoveEnemy;
 
-        createNewEnemyButton = new Button();
-        createNewEnemyButton.text = "Create Enemy";
-        createNewEnemyButton.clicked += CreateEnemy;
-
-        removeExistingEnemyButton = new Button();
-        removeExistingEnemyButton.text = "Remove Enemy";
-        removeExistingEnemyButton.clicked += RemoveEnemy;
-
-        enemyListView = new ListView();
+        creatorEditor.createdItemsListView = new ListView();
+        
         RefreshEnemyData();
-        ConfigureListView(ref enemyListView);
-        enemyListView.style.flexGrow = 1;
-        enemyListView.selectionChanged += EnemySelectionChanged;
+        ConfigureListView(creatorEditor.createdItemsListView);
+        creatorEditor.createdItemsListView.style.flexGrow = 1;
+        creatorEditor.createdItemsListView.selectionChanged += CreatedItemsSelectionChanged;
+        
+        AddLeftPaneVisualElements();
+        AddRightPaneVisualElements();
     }
-
+    
     private void AddLeftPaneVisualElements()
     {
-        leftPaneBox.Add(leftPaneLabel);
-        leftPaneBox.Add(enemyNameField);
-        leftPaneBox.Add(spriteField);
-        leftPaneBox.Add(maxHealthField);
-        leftPaneBox.Add(enemyDamageField);
-        leftPaneBox.Add(enemySpeedField);
-        leftPaneBox.Add(enemyStoppingDistanceField);
-        leftPaneBox.Add(enemyMovementTypeDropdownField);
-        leftPaneBox.Add(imageForNewEnemy);
-        leftPaneBox.Add(createNewEnemyButton);
+        creatorEditor.leftPaneBox.Add(creatorEditor.leftPaneLabel);
+        creatorEditor.leftPaneBox.Add(enemyNameField);
+        creatorEditor.leftPaneBox.Add(spriteField);
+        creatorEditor.leftPaneBox.Add(maxHealthField);
+        creatorEditor.leftPaneBox.Add(enemyDamageField);
+        creatorEditor.leftPaneBox.Add(enemySpeedField);
+        creatorEditor.leftPaneBox.Add(enemyStoppingDistanceField);
+        creatorEditor.leftPaneBox.Add(enemyMovementTypeDropdownField);
+        creatorEditor.leftPaneBox.Add(imageForNewEnemy);
+        creatorEditor.leftPaneBox.Add(creatorEditor.createButton);
     }
-
     private void AddRightPaneVisualElements()
     {
-        rightPaneBox.Add(rightPaneLabel);
-        rightPaneBox.Add(enemyListView);
-        rightPaneBox.Add(removeExistingEnemyButton);
-        rightPaneBox.Add(imageForExistingEnemy);
+        creatorEditor.rightPaneBox.Add(creatorEditor.rightPaneLabel);
+        creatorEditor.rightPaneBox.Add(creatorEditor.createdItemsListView);
+        creatorEditor.rightPaneBox.Add(creatorEditor.removeButton);
+        creatorEditor.rightPaneBox.Add(imageForExistingEnemy);
     }
-
-    private void StyliseLabel(ref Label label)
-    {
-        label.style.borderTopWidth = labelBorderSize;
-        label.style.borderBottomWidth = labelBorderSize;
-        label.style.color = Color.cyan;
-        label.style.unityFontStyleAndWeight = FontStyle.Bold;
-    }
-
-    private void StyliseImage(ref Image image)
-    {
-        image.scaleMode = ScaleMode.ScaleToFit;
-        image.style.height = imageHeight;
-        image.style.borderBottomWidth = imageBorderSize;
-    }
-
     private void RefreshEnemyData()
     {
         enemyPrefabsList = Resources.LoadAll<GameObject>(enemyFolderNamePath).ToList();
         enemyNames = new string[enemyPrefabsList.Count];
         for (int i = 0; i < enemyNames.Length; i++)
             enemyNames[i] = enemyPrefabsList[i].name;
-        enemyListView.itemsSource = enemyNames;
+        creatorEditor.createdItemsListView.itemsSource = enemyNames;
 
+        
         string[] loadedEnemyDataPaths = Directory.GetFiles(enemyScriptableObjectFolderPath, "*.asset");
         enemyDataList = new List<EnemyScriptableObject>();
 
@@ -177,13 +118,13 @@ public class EnemyCreatorEditor : EditorWindow
         UpdateDataInPoolingScriptableObject();
     }
 
-    private void ConfigureListView(ref ListView listView)
+    private void ConfigureListView(ListView listView)
     {
         Func<VisualElement> makeItem = () => new Label();
         Action<VisualElement, int> bindItem = (elementToBeAdded, boundItemIndexInList) =>
             (elementToBeAdded as Label).text = enemyNames[boundItemIndexInList];
 
-        listView = new ListView(enemyNames, listViewElementsSize, makeItem, bindItem);
+        listView = new ListView(enemyNames, creatorEditor.listViewElementsSize, makeItem, bindItem);
     }
 
     private void GetSpritePreview(ChangeEvent<Object> evt)
@@ -193,8 +134,8 @@ public class EnemyCreatorEditor : EditorWindow
         EditorGUIUtility.PingObject(enemyArt);
     }
 
-    private void EnemySelectionChanged(IEnumerable<object> selectedObjects) => ChangeSprite(ref imageForExistingEnemy,
-        enemyPrefabsList[enemyListView.selectedIndex].GetComponent<EnemyController>().GetEnemySprite());
+    private void CreatedItemsSelectionChanged(IEnumerable<object> selectedObjects) => ChangeSprite(ref imageForExistingEnemy,
+        enemyPrefabsList[creatorEditor.createdItemsListView.selectedIndex].GetComponent<EnemyController>().GetEnemySprite());
 
     private void ChangeSprite(ref Image spriteToBeChanged, Sprite newSprite) => spriteToBeChanged.sprite = newSprite;
 
@@ -224,7 +165,7 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void GenerateEnemy()
     {
-        EnemyScriptableObject enemyData = CreateInstance<EnemyScriptableObject>();
+        EnemyScriptableObject enemyData = ScriptableObject.CreateInstance<EnemyScriptableObject>();
         string assetPath =
             AssetDatabase.GenerateUniqueAssetPath(enemyScriptableObjectFolderPath + enemyNameField.text + ".asset");
 
@@ -261,8 +202,8 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void RemoveEnemy()
     {
-        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(enemyPrefabsList[enemyListView.selectedIndex]));
-        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(enemyDataList[enemyListView.selectedIndex]));
+        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(enemyPrefabsList[creatorEditor.createdItemsListView.selectedIndex]));
+        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(enemyDataList[creatorEditor.createdItemsListView.selectedIndex]));
         RefreshEnemyData();
         UpdateDataInPoolingScriptableObject();
     }
@@ -278,9 +219,9 @@ public class EnemyCreatorEditor : EditorWindow
 
     private void UpdateDataInPoolingScriptableObject()
     {
-        objectPoolingServiceScriptableObject.EnemyPrefabsList =
+        creatorEditor.objectPoolingServiceScriptableObject.EnemyPrefabsList =
             Resources.LoadAll<EnemyController>(enemyFolderNamePath).ToList();
-        EditorUtility.SetDirty(objectPoolingServiceScriptableObject);
+        EditorUtility.SetDirty(creatorEditor.objectPoolingServiceScriptableObject);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }

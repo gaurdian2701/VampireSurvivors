@@ -65,14 +65,13 @@ public class EnemySpawnService : IPausable
 
     //Using 2pi/enemynumber to get enemy position around a circle point in radians,
     //then multiplying it with random number to spawn on random points/equal points around the circle.
-    private async void SpawnEnemy()
+    private void SpawnEnemy()
     {
         GetEnemyFromPool();
         if(enemyToBeSpawned == null) return;
         
         float radiansPositionOnCircle = 2 * Mathf.PI / startingNumberOfEnemies * Random.Range(0f, startingNumberOfEnemies);
         enemyToBeSpawned.transform.position = GetCoordinatesOutsideOfPlayerView(radiansPositionOnCircle);
-        
     }
 
     private void SpawnHorde()

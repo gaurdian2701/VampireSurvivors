@@ -11,7 +11,7 @@ public class CrossbowController : Weapon
     private bool canShoot = true;
     private const int milliseconds = 1000;
     private float degreeOffset = 30f;
-    private int arrowsLossenedPerShot = 1;
+    private int arrowsLoosenedPerShot = 50;
     private void Awake()
     {
         InitWeaponData(weaponData);
@@ -29,14 +29,14 @@ public class CrossbowController : Weapon
         float endingAngle = middleAngle - offsetInRadians / 2;
         float currentAngle = startingAngle;
 
-        if (arrowsLossenedPerShot == 1)
+        if (arrowsLoosenedPerShot == 1)
             currentAngle = middleAngle;
         
-        for (int i = 0; i < arrowsLossenedPerShot; i++)
+        for (int i = 0; i < arrowsLoosenedPerShot; i++)
         {
             ProjectileController projectileController = PrepareArrow();
             Vector3 projectilePos = new Vector2(Mathf.Cos(currentAngle), Mathf.Sin(currentAngle));
-            currentAngle += (startingAngle - endingAngle) / arrowsLossenedPerShot;
+            currentAngle += (startingAngle - endingAngle) / arrowsLoosenedPerShot;
             projectileController.transform.position += projectilePos;
             projectileController.transform.up = (projectileController.transform.position - transform.position).normalized;
         }
@@ -59,4 +59,6 @@ public class CrossbowController : Weapon
         await Task.Delay(milliseconds - (int)BaseAttackSpeed);
         canShoot = true;
     }
+    
+    public void IncreaseArrowsLoosenedPerShot(int someArrows) => arrowsLoosenedPerShot += someArrows;
 }

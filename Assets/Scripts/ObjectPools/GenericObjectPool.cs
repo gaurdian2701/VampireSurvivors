@@ -18,9 +18,6 @@ public class GenericObjectPool<T> where T : class
                 return pooledObject.Object;
             }
         }
-        
-        // if(pooledObjects.Count != 0)
-        //     Debug.Log("Failed tp find object in the pool for " + pooledObjects[0].Object);
         return CreateNewPooledObject();
     }
     
