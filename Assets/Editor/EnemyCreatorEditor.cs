@@ -57,7 +57,7 @@ public class EnemyCreatorEditor : EditorWindow
 
         VisualElement root = rootVisualElement;
         
-        LoadEnemyCreatorUI();
+        InitializeFields();
 
         FillLeftPane();
         FillRightPane();
@@ -68,7 +68,7 @@ public class EnemyCreatorEditor : EditorWindow
         root.Add(twoPaneSplitView);
     }
 
-    private void LoadEnemyCreatorUI()
+    private void InitializeFields()
     {
         leftPaneBox = new Box();
         rightPaneBox = new Box();

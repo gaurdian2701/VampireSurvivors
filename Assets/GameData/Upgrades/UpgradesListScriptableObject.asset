@@ -12,9 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 174e9ea13a54f7749b57c6ca4628166c, type: 3}
   m_Name: UpgradesListScriptableObject
   m_EditorClassIdentifier: 
-  Upgrades:
-  - Damage: 0
-    AttackSpeed: 0
-    Knockback: 0
-    NumberOfWeapons: 0
-    AttackSpread: 0
+  Upgrades: []

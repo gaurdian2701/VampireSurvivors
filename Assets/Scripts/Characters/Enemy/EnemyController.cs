@@ -83,7 +83,7 @@ public class EnemyController : Character, IPausable
     {
         this.enemyData = enemyData;
     }
-    public Sprite GetEnemySprite() => enemySpriteRenderer.sprite;
+    public Sprite GetEnemySprite() => enemyData.EnemySprite;
     public EnemyMovementType GetEnemyMovementType() => enemyData.EnemyMovementType;
 
     public void Pause() => enemyPaused = true;

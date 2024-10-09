@@ -6,8 +6,15 @@ using UnityEngine.Serialization;
 public class UpgradeData
 {
     [FormerlySerializedAs("UpgradeDamage")] public int Damage;
-    [FormerlySerializedAs("UpgradeAttackSpeed")] public int AttackSpeed;
+    [FormerlySerializedAs("UpgradeAttackSpeed")] public float AttackSpeed;
     [FormerlySerializedAs("UpgradeKnockback")] public int Knockback;
-    [FormerlySerializedAs("UpgradeNumberOfWeapons")] public int NumberOfWeapons;
-    public float AttackSpread;
+
+    public void InitializeBaseUpgradeStats(int Damage,
+        float AttackSpeed,
+        int Knockback)
+    {
+        this.Damage = Damage;
+        this.AttackSpeed = AttackSpeed;
+        this.Knockback = Knockback;
+    }
 }
