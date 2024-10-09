@@ -10,8 +10,8 @@ public class CrossbowController : Weapon
 
     private bool canShoot = true;
     private const int milliseconds = 1000;
-    private float degreeOffset = 30f;
-    private int arrowsLoosenedPerShot = 50;
+    private float arrowSpread = 30f;
+    private int arrowsLoosenedPerShot = 20;
     private void Awake()
     {
         InitWeaponData(weaponData);
@@ -23,7 +23,7 @@ public class CrossbowController : Weapon
         if (!canShoot)
             return;
 
-        float offsetInRadians = Mathf.Deg2Rad * degreeOffset;
+        float offsetInRadians = Mathf.Deg2Rad * arrowSpread;
         float middleAngle = Mathf.Atan2(transform.up.y, transform.up.x);
         float startingAngle = middleAngle + offsetInRadians / 2;
         float endingAngle = middleAngle - offsetInRadians / 2;
