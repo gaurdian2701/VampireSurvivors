@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.Windows;
 using Directory = System.IO.Directory;
 using Object = UnityEngine.Object;
 
@@ -31,16 +29,12 @@ public class EnemyCreatorEditor : EditorWindow
     private ListView enemyListView;
 
     private const string enemyEditorScriptName = "[ENEMY CREATOR] - ";
-    private const string enemyString = "ENEMY";
     private const string enemyScriptableObjectFolderPath = "Assets/GameData/Enemies/";
     private const string objectPoolingScriptableObjectFolderPath = "Assets/GameData/Systems/";
     private const string enemyFolderNamePath = "Enemies/";
     private const string enemyPrefabFolderPath = "Assets/Resources/" + enemyFolderNamePath;
     private const string enemyArtFolderPath = "Assets/KeyArt/" + enemyFolderNamePath;
     private const int listViewElementsSize = 30;
-    private const int labelBorderSize = 5;
-    private const int imageBorderSize = 20;
-    private const int imageHeight = 150;
     private const int splitViewWidth = 250;
 
     private List<GameObject> enemyPrefabsList;
@@ -48,11 +42,11 @@ public class EnemyCreatorEditor : EditorWindow
     private ObjectPoolingServiceScriptableObject objectPoolingServiceScriptableObject;
     private string[] enemyNames;
 
-    [MenuItem("Window/Custom Editors/Creator Editor")]
+    [MenuItem("Window/Custom Editors/Enemy Creator Editor")]
     public static void ShowWindow()
     {
         EnemyCreatorEditor window = GetWindow<EnemyCreatorEditor>();
-        window.titleContent = new GUIContent("Creator");
+        window.titleContent = new GUIContent("Enemy Creator");
     }
 
     private void CreateGUI()
@@ -63,7 +57,7 @@ public class EnemyCreatorEditor : EditorWindow
 
         VisualElement root = rootVisualElement;
         
-        ChangeUIToEnemyCreator();
+        LoadEnemyCreatorUI();
 
         AddLeftPaneVisualElements();
         AddRightPaneVisualElements();
@@ -74,7 +68,7 @@ public class EnemyCreatorEditor : EditorWindow
         root.Add(twoPaneSplitView);
     }
 
-    private void ChangeUIToEnemyCreator()
+    private void LoadEnemyCreatorUI()
     {
         leftPaneBox = new Box();
         rightPaneBox = new Box();
@@ -82,8 +76,8 @@ public class EnemyCreatorEditor : EditorWindow
             new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
         leftPaneLabel = new Label("ENEMY CREATOR");
         rightPaneLabel = new Label("ENEMY LIST");
-        StyliseLabel(ref leftPaneLabel);
-        StyliseLabel(ref rightPaneLabel);
+        MiscFunctions.StyliseLabel(ref leftPaneLabel);
+        MiscFunctions.StyliseLabel(ref rightPaneLabel);
 
         enemyNameField = new TextField("Enemy Name");
 
@@ -101,8 +95,8 @@ public class EnemyCreatorEditor : EditorWindow
 
         imageForNewEnemy = new Image();
         imageForExistingEnemy = new Image();
-        StyliseImage(ref imageForNewEnemy);
-        StyliseImage(ref imageForExistingEnemy);
+        MiscFunctions.StyliseImage(ref imageForNewEnemy);
+        MiscFunctions.StyliseImage(ref imageForExistingEnemy);
 
         createNewEnemyButton = new Button();
         createNewEnemyButton.text = "Create Enemy";
@@ -139,21 +133,6 @@ public class EnemyCreatorEditor : EditorWindow
         rightPaneBox.Add(enemyListView);
         rightPaneBox.Add(removeExistingEnemyButton);
         rightPaneBox.Add(imageForExistingEnemy);
-    }
-
-    private void StyliseLabel(ref Label label)
-    {
-        label.style.borderTopWidth = labelBorderSize;
-        label.style.borderBottomWidth = labelBorderSize;
-        label.style.color = Color.cyan;
-        label.style.unityFontStyleAndWeight = FontStyle.Bold;
-    }
-
-    private void StyliseImage(ref Image image)
-    {
-        image.scaleMode = ScaleMode.ScaleToFit;
-        image.style.height = imageHeight;
-        image.style.borderBottomWidth = imageBorderSize;
     }
 
     private void RefreshEnemyData()
