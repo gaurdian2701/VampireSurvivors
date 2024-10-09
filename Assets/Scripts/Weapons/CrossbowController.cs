@@ -11,7 +11,7 @@ public class CrossbowController : Weapon
     private bool canShoot = true;
     private const int milliseconds = 1000;
     private float arrowSpread = 30f;
-    private int arrowsLoosenedPerShot = 20;
+    private int arrowsLoosenedPerShot = 1;
     private void Awake()
     {
         InitWeaponData(weaponData);

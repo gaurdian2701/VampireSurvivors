@@ -23,6 +23,8 @@ public class UpgradeCreatorEditor : EditorWindow
     private Image imageForExistingEnemy;
     private ListView enemyListView;
     
+    private const int splitViewWidth = 250;
+    
     [MenuItem("Window/Custom Editors/Upgrade Creator Editor")]
     public static void ShowWindow()
     {
@@ -36,8 +38,8 @@ public class UpgradeCreatorEditor : EditorWindow
         
         LoadUpgradeCreatorUI();
 
-        AddLeftPaneVisualElements();
-        AddRightPaneVisualElements();
+        FillLeftPane();
+        FillRightPane();
 
         twoPaneSplitView.Add(leftPaneBox);
         twoPaneSplitView.Add(rightPaneBox);
@@ -47,16 +49,27 @@ public class UpgradeCreatorEditor : EditorWindow
 
     private void LoadUpgradeCreatorUI()
     {
-        
+        leftPaneBox = new Box();
+        rightPaneBox = new Box();
+        twoPaneSplitView =
+            new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
+        leftPaneLabel = new Label("UPGRADE CREATOR");
+        rightPaneLabel = new Label("UPGRADE LIST");
+        MiscFunctions.StyliseLabel(ref leftPaneLabel);
+        MiscFunctions.StyliseLabel(ref rightPaneLabel);
+        FillLeftPane();
+        FillRightPane();
+        twoPaneSplitView.Add(leftPaneBox);
+        twoPaneSplitView.Add(rightPaneBox);
     }
 
-    private void AddLeftPaneVisualElements()
+    private void FillLeftPane()
     {
-        
+        leftPaneBox.Add(leftPaneLabel);
     }
 
-    private void AddRightPaneVisualElements()
+    private void FillRightPane()
     {
-        
+        rightPaneBox.Add(rightPaneLabel);
     }
 }

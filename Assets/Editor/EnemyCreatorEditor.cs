@@ -59,8 +59,8 @@ public class EnemyCreatorEditor : EditorWindow
         
         LoadEnemyCreatorUI();
 
-        AddLeftPaneVisualElements();
-        AddRightPaneVisualElements();
+        FillLeftPane();
+        FillRightPane();
 
         twoPaneSplitView.Add(leftPaneBox);
         twoPaneSplitView.Add(rightPaneBox);
@@ -113,7 +113,7 @@ public class EnemyCreatorEditor : EditorWindow
         enemyListView.selectionChanged += EnemySelectionChanged;
     }
 
-    private void AddLeftPaneVisualElements()
+    private void FillLeftPane()
     {
         leftPaneBox.Add(leftPaneLabel);
         leftPaneBox.Add(enemyNameField);
@@ -127,7 +127,7 @@ public class EnemyCreatorEditor : EditorWindow
         leftPaneBox.Add(createNewEnemyButton);
     }
 
-    private void AddRightPaneVisualElements()
+    private void FillRightPane()
     {
         rightPaneBox.Add(rightPaneLabel);
         rightPaneBox.Add(enemyListView);
