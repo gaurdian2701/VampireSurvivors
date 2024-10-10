@@ -32,10 +32,11 @@ public class EnemyController : Character, IPausable
     private int enemyDamage;
     
     private Color originalEnemyColor;
-    private Color enemyColorOnHit = new Color(205f, 0f, 0f);
+    private readonly Color enemyColorOnHit = new Color(205f, 0f, 0f);
     
     private const float knockBackDuration = 2.5f;
     private const int milliseconds = 100;
+    private const int playerLevelMilestoneForIncreasingStats = 5;
     
     private void Awake()
     {
@@ -70,12 +71,14 @@ public class EnemyController : Character, IPausable
 
     private void SubscribeToEvents()
     {
+        GameManager.Instance.EventService.OnPlayerLevelledUp += CheckForStatIncrease;
         GameManager.Instance.EventService.OnGameEnteredPauseState += Pause;
         GameManager.Instance.EventService.OnGameEnteredPlayState += Resume;
     }
 
     private void UnsubscribeFromEvents()
     {
+        GameManager.Instance.EventService.OnPlayerLevelledUp -= CheckForStatIncrease;
         GameManager.Instance.EventService.OnGameEnteredPauseState -= Pause;
         GameManager.Instance.EventService.OnGameEnteredPlayState -= Resume;
     }
@@ -84,7 +87,16 @@ public class EnemyController : Character, IPausable
         this.enemyData = enemyData;
     }
     public Sprite GetEnemySprite() => enemyData.EnemySprite;
-    public EnemyMovementType GetEnemyMovementType() => enemyData.EnemyMovementType;
+
+    private void CheckForStatIncrease()
+    {
+        if (GameManager.Instance.PlayerController.CurrentPlayerLevel % playerLevelMilestoneForIncreasingStats != 0)
+            return;
+        
+        HealthController.SetMaxHealth(MaxHealth + enemyData.EnemyMaxHealthStatIncreaseRate);
+        enemySpeedModifier += enemyData.EnemySpeedStatIncreaseRate;
+        enemyDamage += enemyData.DamageStatIncreaseRate;
+    }
 
     public void Pause() => enemyPaused = true;
 

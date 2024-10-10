@@ -12,4 +12,7 @@ public class EnemyScriptableObject : ScriptableObject
     public float EnemySpeed;
     [FormerlySerializedAs("StoppingDistance")] public float EnemyStoppingDistance;
     public EnemyMovementType EnemyMovementType;
+    [FormerlySerializedAs("MaxHealthStatIncreaseRate")] public int EnemyMaxHealthStatIncreaseRate;
+    [FormerlySerializedAs("SpeedStatIncreaseRate")] public float EnemySpeedStatIncreaseRate;
+    public int DamageStatIncreaseRate;
 }

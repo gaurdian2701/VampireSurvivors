@@ -17,6 +17,7 @@ public class HealthController
     }
     
     public int GetMaxHealth() => maxHealth;
+    public int SetMaxHealth(int maxHealth) => this.maxHealth = maxHealth;
     public void ResetHealth() => CurrentHealth = maxHealth;
     public void DecreaseHealth(int someHealth)
     {

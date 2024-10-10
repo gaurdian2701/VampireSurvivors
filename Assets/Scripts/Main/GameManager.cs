@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 
 public class GameManager : StateMachine
 {
+    public float gameSpeed;
+    
     private static GameManager instance;
     public static GameManager Instance { get { return instance; } }
     
@@ -81,6 +83,7 @@ public class GameManager : StateMachine
 
     private void Update()
     {
+        Time.timeScale = gameSpeed;
         UpdateStateMachine();
     }
     

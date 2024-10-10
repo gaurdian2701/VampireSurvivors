@@ -18,3 +18,6 @@ MonoBehaviour:
   EnemySpeed: 1.5
   EnemyStoppingDistance: 0.5
   EnemyMovementType: 1
+  MaxHealthStatIncreaseRate: 2
+  SpeedStatIncreaseRate: 2
+  DamageStatIncreaseRate: 1

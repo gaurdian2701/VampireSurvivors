@@ -19,10 +19,13 @@ public class EnemyCreatorEditor : EditorWindow
     private Button removeExistingEnemyButton;
     private TextField enemyNameField;
     private DropdownField enemyMovementTypeDropdownField;
-    private IntegerField maxHealthField;
+    private IntegerField enemyMaxHealthField;
     private IntegerField enemyDamageField;
     private FloatField enemySpeedField;
     private FloatField enemyStoppingDistanceField;
+    private IntegerField enemyMaxHealthStatIncreaseRateField;
+    private IntegerField enemyDamageStatIncreaseRateField;
+    private FloatField enemySpeedStatIncreaseRateField;
     private ObjectField spriteField;
     private Image imageForNewEnemy;
     private Image imageForExistingEnemy;
@@ -84,7 +87,7 @@ public class EnemyCreatorEditor : EditorWindow
         enemyMovementTypeDropdownField = new DropdownField("Enemy Movement Type");
         enemyMovementTypeDropdownField.choices = Enum.GetNames(typeof(EnemyMovementType)).ToList();
 
-        maxHealthField = new IntegerField("Enemy Max Health");
+        enemyMaxHealthField = new IntegerField("Enemy Max Health");
         enemyDamageField = new IntegerField("Enemy Damage");
 
         enemySpeedField = new FloatField("Enemy Speed");
@@ -118,7 +121,7 @@ public class EnemyCreatorEditor : EditorWindow
         leftPaneBox.Add(leftPaneLabel);
         leftPaneBox.Add(enemyNameField);
         leftPaneBox.Add(spriteField);
-        leftPaneBox.Add(maxHealthField);
+        leftPaneBox.Add(enemyMaxHealthField);
         leftPaneBox.Add(enemyDamageField);
         leftPaneBox.Add(enemySpeedField);
         leftPaneBox.Add(enemyStoppingDistanceField);
@@ -220,10 +223,13 @@ public class EnemyCreatorEditor : EditorWindow
         enemyData.name = enemyNameField.text;
         Enum.TryParse(enemyMovementTypeDropdownField.value, out EnemyMovementType enemyMovementType);
         enemyData.EnemyMovementType = enemyMovementType;
-        enemyData.EnemyMaxHealth = maxHealthField.value;
+        enemyData.EnemyMaxHealth = enemyMaxHealthField.value;
         enemyData.EnemyDamage = enemyDamageField.value;
         enemyData.EnemySpeed = enemySpeedField.value;
         enemyData.EnemyStoppingDistance = enemyStoppingDistanceField.value;
+        enemyData.EnemyMaxHealthStatIncreaseRate = enemyMaxHealthStatIncreaseRateField.value;
+        enemyData.EnemySpeedStatIncreaseRate = enemySpeedStatIncreaseRateField.value;
+        enemyData.DamageStatIncreaseRate = enemyDamageStatIncreaseRateField.value;
         Sprite enemySprite = spriteField.value as Sprite;
         enemyData.EnemySprite = enemySprite;
     }
