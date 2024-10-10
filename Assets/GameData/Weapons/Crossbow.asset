@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8deba7a615564a44e83dd6f8a229fa21, type: 3}
   m_Name: Crossbow
   m_EditorClassIdentifier: 
+  WeaponType: 1
   Damage: 1
   AttackSpeed: 5
   KnockbackForce: 1

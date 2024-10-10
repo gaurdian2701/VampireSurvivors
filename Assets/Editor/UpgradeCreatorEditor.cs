@@ -1,85 +1,72 @@
 using System;
 using System.Linq;
+using NUnit.Framework.Constraints;
+using Unity.Mathematics;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 public class UpgradeCreatorEditor : EditorWindow
 {
-    private TwoPaneSplitView twoPaneSplitView;
-    private Box leftPaneBox;
-    private Box rightPaneBox;
+    private Box mainBox;
     private Label leftPaneLabel;
-    private Label rightPaneLabel;
+    private TextField nameOfUpgradeField;
     private DropdownField weaponTypeForUpgradeDropdownField;
     private IntegerField damageIncreaseForUpgradeField;
     private FloatField attackSpeedIncreaseForUpgradeField;
-    private FloatField attackSpreadIncreaseForUpgradeField;
+    private FloatField projectileSpreadIncreaseForUpgradeField;
     private IntegerField knockBackIncreaseForUpgradeField;
     private IntegerField numberOfWeaponsIncreasedForUpgradeField;
     private Button createNewUpgradeButton;
-    private ListView enemyListView;
-    
-    private const int splitViewWidth = 250;
+
     private const string upgradesDataDirectory = "Assets/GameData/Upgrades/UpgradesListScriptableObject.asset";
-    
+    private const string upgradeCreatorString = "[UPGRADE CREATOR] - ";
+
     private UpgradesListScriptableObject upgradesListScriptableObject;
-    
+
     [MenuItem("Window/Custom Editors/Upgrade Creator Editor")]
     public static void ShowWindow()
     {
         UpgradeCreatorEditor window = GetWindow<UpgradeCreatorEditor>();
         window.titleContent = new GUIContent("Upgrade Creator");
     }
-    
+
     private void CreateGUI()
     {
         VisualElement root = rootVisualElement;
-        
+        upgradesListScriptableObject =
+            AssetDatabase.LoadAssetAtPath<UpgradesListScriptableObject>(upgradesDataDirectory);
         LoadUpgradeCreatorUI();
-
-        FillLeftPane();
-        FillRightPane();
-
-        twoPaneSplitView.Add(leftPaneBox);
-        twoPaneSplitView.Add(rightPaneBox);
-
-        root.Add(twoPaneSplitView);
+        root.Add(mainBox);
     }
 
     private void LoadUpgradeCreatorUI()
     {
         InitializeFields();
-        FillLeftPane();
-        FillRightPane();
-        twoPaneSplitView.Add(leftPaneBox);
-        twoPaneSplitView.Add(rightPaneBox);
+        FillBox();
     }
 
     private void InitializeFields()
     {
-        upgradesListScriptableObject =
-            AssetDatabase.LoadAssetAtPath<UpgradesListScriptableObject>(upgradesDataDirectory);
-        twoPaneSplitView =
-            new TwoPaneSplitView(0, splitViewWidth, TwoPaneSplitViewOrientation.Horizontal);
-        leftPaneBox = new Box();
-        rightPaneBox = new Box();
+        mainBox = new Box();
         leftPaneLabel = new Label("UPGRADE CREATOR");
-        rightPaneLabel = new Label("UPGRADE LIST");
         MiscFunctions.StyliseLabel(ref leftPaneLabel);
-        MiscFunctions.StyliseLabel(ref rightPaneLabel);
-        
+
+        nameOfUpgradeField = new TextField("Name of Upgrade");
+
         weaponTypeForUpgradeDropdownField = new DropdownField("Weapon Type for Upgrade");
         weaponTypeForUpgradeDropdownField.choices = Enum.GetNames(typeof(WeaponType)).ToList();
         weaponTypeForUpgradeDropdownField.RegisterValueChangedCallback(OnWeaponTypeSelected);
-        
+
         damageIncreaseForUpgradeField = new IntegerField("Damage Increase");
         attackSpeedIncreaseForUpgradeField = new FloatField("Attack Speed Increase");
-        attackSpreadIncreaseForUpgradeField =  new FloatField("Attack Spread Increase");
+        projectileSpreadIncreaseForUpgradeField = new FloatField("Projectile Spread Increase");
+        projectileSpreadIncreaseForUpgradeField.style.display = DisplayStyle.None;
         knockBackIncreaseForUpgradeField = new IntegerField("KnockBack Increase");
-        numberOfWeaponsIncreasedForUpgradeField = new IntegerField("Number of Weapons Added");
-        
+        numberOfWeaponsIncreasedForUpgradeField = new IntegerField("Number of Weapons/Projectiles Added");
+
         createNewUpgradeButton = new Button();
         createNewUpgradeButton.text = "Create Upgrade";
         createNewUpgradeButton.clicked += CreateNewUpgrade;
@@ -88,56 +75,62 @@ public class UpgradeCreatorEditor : EditorWindow
     private void OnWeaponTypeSelected(ChangeEvent<string> evt)
     {
         Enum.TryParse(evt.newValue, out WeaponType weaponType);
-        if (weaponType == WeaponType.AXE)
+        if (weaponType == WeaponType.MELEE)
         {
-            leftPaneBox.Remove(attackSpreadIncreaseForUpgradeField);
-            if(!leftPaneBox.Contains(numberOfWeaponsIncreasedForUpgradeField))
-                leftPaneBox.Add(numberOfWeaponsIncreasedForUpgradeField);
+            projectileSpreadIncreaseForUpgradeField.style.display = DisplayStyle.None;
         }
-        else if (weaponType == WeaponType.CROSSBOW)
+        else if (weaponType == WeaponType.RANGED)
         {
-            leftPaneBox.Remove(numberOfWeaponsIncreasedForUpgradeField);
-            if(!leftPaneBox.Contains(attackSpreadIncreaseForUpgradeField))
-                leftPaneBox.Add(attackSpreadIncreaseForUpgradeField);
+            projectileSpreadIncreaseForUpgradeField.style.display = DisplayStyle.Flex;
         }
     }
 
     private void CreateNewUpgrade()
     {
+        EditorGUIUtility.PingObject(upgradesListScriptableObject);
+        if (string.IsNullOrEmpty(nameOfUpgradeField.value))
+        {
+            Debug.LogError(upgradeCreatorString + "CANNOT CREATE UPGRADE WITH NO NAME");
+            return;
+        }
+
+        if (AllInputFieldsAreEmpty())
+        {
+            Debug.LogError(upgradeCreatorString + "FILL IN AT LEAST ONE FIELD");
+            return;
+        }
+
         Enum.TryParse(weaponTypeForUpgradeDropdownField.value, out WeaponType weaponType);
-        if (weaponType == WeaponType.AXE)
-        {
-            AxeUpgradeData axeUpgrade = new AxeUpgradeData();
-            axeUpgrade.InitializeBaseUpgradeStats(damageIncreaseForUpgradeField.value,
-                attackSpeedIncreaseForUpgradeField.value,
-                knockBackIncreaseForUpgradeField.value);
-            axeUpgrade.NumberOfWeapons = numberOfWeaponsIncreasedForUpgradeField.value;
-            upgradesListScriptableObject.Upgrades.Add(axeUpgrade);
-        }
-        else if (weaponType == WeaponType.CROSSBOW)
-        {
-            CrossbowUpgradeData crossbowUpgrade = new CrossbowUpgradeData();
-            crossbowUpgrade.InitializeBaseUpgradeStats(damageIncreaseForUpgradeField.value,
-                attackSpeedIncreaseForUpgradeField.value,
-                knockBackIncreaseForUpgradeField.value);
-            crossbowUpgrade.AttackSpread = attackSpreadIncreaseForUpgradeField.value;
-            upgradesListScriptableObject.Upgrades.Add(crossbowUpgrade);
-        }
-    }
-    
-    private void FillLeftPane()
-    {
-        leftPaneBox.Add(leftPaneLabel);
-        leftPaneBox.Add(weaponTypeForUpgradeDropdownField);
-        leftPaneBox.Add(damageIncreaseForUpgradeField);
-        leftPaneBox.Add(attackSpreadIncreaseForUpgradeField);
-        leftPaneBox.Add(knockBackIncreaseForUpgradeField);
-        leftPaneBox.Add(numberOfWeaponsIncreasedForUpgradeField);
-        leftPaneBox.Add(createNewUpgradeButton);
+
+
+        UpgradeData newUpgrade = new UpgradeData();
+        newUpgrade.InitializeBaseUpgradeStats(nameOfUpgradeField.value,
+            weaponType,
+            damageIncreaseForUpgradeField.value,
+            attackSpeedIncreaseForUpgradeField.value,
+            knockBackIncreaseForUpgradeField.value,
+            numberOfWeaponsIncreasedForUpgradeField.value,
+            projectileSpreadIncreaseForUpgradeField.value);
+        newUpgrade.NumberOfWeapons = numberOfWeaponsIncreasedForUpgradeField.value;
+        upgradesListScriptableObject.Upgrades.Add(newUpgrade);
     }
 
-    private void FillRightPane()
+    private bool AllInputFieldsAreEmpty() => damageIncreaseForUpgradeField.value +
+        attackSpeedIncreaseForUpgradeField.value +
+        projectileSpreadIncreaseForUpgradeField.value +
+        knockBackIncreaseForUpgradeField.value +
+        numberOfWeaponsIncreasedForUpgradeField.value <= 0;
+
+    private void FillBox()
     {
-        rightPaneBox.Add(rightPaneLabel);
+        mainBox.Add(leftPaneLabel);
+        mainBox.Add(nameOfUpgradeField);
+        mainBox.Add(weaponTypeForUpgradeDropdownField);
+        mainBox.Add(damageIncreaseForUpgradeField);
+        mainBox.Add(attackSpeedIncreaseForUpgradeField);
+        mainBox.Add(projectileSpreadIncreaseForUpgradeField);
+        mainBox.Add(knockBackIncreaseForUpgradeField);
+        mainBox.Add(numberOfWeaponsIncreasedForUpgradeField);
+        mainBox.Add(createNewUpgradeButton);
     }
 }

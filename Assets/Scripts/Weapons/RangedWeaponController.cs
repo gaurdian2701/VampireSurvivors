@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class CrossbowController : Weapon
+public class RangedWeaponController : Weapon
 {
     [SerializeField] private WeaponScriptableObject weaponData;
 
@@ -61,4 +61,5 @@ public class CrossbowController : Weapon
     }
     
     public void IncreaseArrowsLoosenedPerShot(int someArrows) => arrowsLoosenedPerShot += someArrows;
+    public void IncreaseAttackSpread(float someValue) => arrowSpread += someValue;
 }

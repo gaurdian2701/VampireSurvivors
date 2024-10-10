@@ -14,9 +14,10 @@ public class WeaponsManager : MonoBehaviour
     private Dictionary<WeaponType, GameObject> weaponPrefabCache;
     private Dictionary<WeaponType, List<Weapon>> equippedWeapons;
 
-    private static float spawnRadius = 0.3f;
-    private CrossbowController crossbowController;
-    private int totalNumberOfWeaponEquipped = 0;
+    private readonly float spawnRadius = 0.3f;
+    private readonly int startingNumberOfWeaponsPerCategory = 1;
+    private RangedWeaponController rangedWeaponController;
+    private int totalNumberOfWeaponEquipped;
 
     private void Awake()
     {
@@ -26,16 +27,16 @@ public class WeaponsManager : MonoBehaviour
 
     private void Start()
     {
-        SpawnWeapon(WeaponType.AXE);
-        SpawnWeapon(WeaponType.CROSSBOW);
-        crossbowController = equippedWeapons[WeaponType.CROSSBOW][0] as CrossbowController;
+        SpawnWeapons(WeaponType.MELEE, startingNumberOfWeaponsPerCategory);
+        SpawnWeapons(WeaponType.RANGED, startingNumberOfWeaponsPerCategory);
+        rangedWeaponController = equippedWeapons[WeaponType.RANGED][0] as RangedWeaponController;
     }
 
     private void Update()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 directionVector = (mousePos - (Vector2)playerTransform.position).normalized;
-        crossbowController.transform.up = directionVector;
+        rangedWeaponController.transform.up = directionVector;
     }
 
     private void FillPrefabCacheData()
@@ -54,18 +55,22 @@ public class WeaponsManager : MonoBehaviour
         foreach (int i in Enum.GetValues(typeof(WeaponType)))
             equippedWeapons.Add((WeaponType)i, new List<Weapon>());
     }
+    
 
-    public void SpawnWeapon(WeaponType weaponType)
+    private void SpawnWeapons(WeaponType weaponType, int numberOfWeapons)
     {
         switch (weaponType)
         {
             default:
-            case WeaponType.AXE:
-                CreateAndUpdateWeaponStats(WeaponType.AXE);
+            case WeaponType.MELEE:
+                for(int i = 0; i < numberOfWeapons; i++)
+                    CreateWeapon(WeaponType.MELEE);
                 break;
-            case WeaponType.CROSSBOW:
+            case WeaponType.RANGED:
                 if (equippedWeapons[weaponType].Count == 0)
-                    CreateAndUpdateWeaponStats(WeaponType.CROSSBOW);
+                    CreateWeapon(WeaponType.RANGED);
+                else
+                    rangedWeaponController.IncreaseArrowsLoosenedPerShot(numberOfWeapons);
                 break;
         }
 
@@ -73,31 +78,35 @@ public class WeaponsManager : MonoBehaviour
         RepositionWeapons();
     }
 
-    private void CreateAndUpdateWeaponStats(WeaponType weaponType)
+    private void CreateWeapon(WeaponType weaponType)
     {
         GameObject weapon = Instantiate(weaponPrefabCache[weaponType]);
         Weapon newlyAddedWeapon;
-
         switch (weaponType)
         {
             default:
-            case WeaponType.AXE:
-                newlyAddedWeapon = weapon.GetComponent<AxeController>();
+            case WeaponType.MELEE:
+                newlyAddedWeapon = weapon.GetComponent<MeleeWeaponController>();
+                UpdateNewWeaponWithStatsInCurrentWeaponCategory(newlyAddedWeapon, WeaponType.MELEE);
                 break;
-            case WeaponType.CROSSBOW:
-                newlyAddedWeapon = weapon.GetComponent<CrossbowController>();
+            
+            case WeaponType.RANGED:
+                newlyAddedWeapon = weapon.GetComponent<RangedWeaponController>();
                 break;
         }
+        equippedWeapons[weaponType].Add(newlyAddedWeapon);
+    }
 
+    private void UpdateNewWeaponWithStatsInCurrentWeaponCategory(Weapon newlyAddedWeapon, WeaponType weaponType)
+    {
         if (equippedWeapons[weaponType].Count != 0)
         {
             Weapon weaponWithUpdatedStats = equippedWeapons[weaponType][0];
-            newlyAddedWeapon.SetBaseDamage(weaponWithUpdatedStats.BaseDamage);
-            newlyAddedWeapon.SetBaseAttackSpeed(weaponWithUpdatedStats.BaseAttackSpeed);
-            newlyAddedWeapon.SetBaseKnockBackForce(weaponWithUpdatedStats.BaseKnockBackForce);
+            newlyAddedWeapon.InitalizeBaseStats(weaponWithUpdatedStats.BaseDamage,
+                weaponWithUpdatedStats.BaseAttackSpeed,
+                weaponWithUpdatedStats.BaseKnockBackForce
+                );
         }
-
-        equippedWeapons[weaponType].Add(newlyAddedWeapon);
     }
 
     private void RepositionWeapons()
@@ -116,28 +125,22 @@ public class WeaponsManager : MonoBehaviour
         }
     }
 
-    public void UpgradeWeapons(WeaponType weaponType, UpgradeType upgradeType)
+    public void UpgradeWeapons(UpgradeData upgradeData)
     {
-        List<Weapon> currentWeaponListToBeUpgraded = equippedWeapons[weaponType];
-        switch (upgradeType)
+        List<Weapon> currentWeaponListToBeUpgraded = equippedWeapons[upgradeData.WeaponType];
+
+        for (int i = 0; i < currentWeaponListToBeUpgraded.Count; i++)
         {
-            default:
-            case UpgradeType.DAMAGE:
-                foreach (Weapon weapon in currentWeaponListToBeUpgraded)
-                    weapon.SetBaseDamage(weapon.BaseDamage + weapon.baseDamageIncreaseRate);
-                break;
-            case UpgradeType.SPEED:
-                foreach (Weapon weapon in currentWeaponListToBeUpgraded)
-                    weapon.SetBaseAttackSpeed(weapon.BaseAttackSpeed + weapon.baseAttackSpeedIncreaseRate);
-                break;
-            case UpgradeType.KNOCKBACK:
-                foreach (Weapon weapon in currentWeaponListToBeUpgraded)
-                    weapon.SetBaseKnockBackForce(weapon.BaseKnockBackForce + weapon.baseKnockBackForceIncreaseRate);
-                break;
-            case UpgradeType.PLUS_ONE:
-                SpawnWeapon(weaponType);
-                break;
+            Weapon weapon = currentWeaponListToBeUpgraded[i];
+            weapon.UpgradeBaseStats(upgradeData);
+            switch (upgradeData.WeaponType)
+            {
+                case WeaponType.RANGED:
+                    weapon.GetComponent<RangedWeaponController>().IncreaseAttackSpread(upgradeData.ProjectileSpread);
+                    break;
+            }
         }
+        SpawnWeapons(upgradeData.WeaponType, upgradeData.NumberOfWeapons);
     }
 
     private Vector3 GetWeaponPositionAroundPlayer(int numberOfWeaponsToSpawn, int index)

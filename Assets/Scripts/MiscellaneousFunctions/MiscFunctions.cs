@@ -8,7 +8,7 @@ public static class MiscFunctions
     private const int imageBorderSize = 20;
     private const int imageHeight = 150;
     
-    public static void ShuffleArray(int[] array)
+    public static void ShuffleArray<T>(T[] array)
     {
         Random random = new Random();
         for (int i = array.Length - 1; i > 0; i--)

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AxeController : Weapon
+public class MeleeWeaponController : Weapon
 {
     [SerializeField] private WeaponScriptableObject weaponData;
 

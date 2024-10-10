@@ -28,6 +28,7 @@ public class PickupSpawnService
     private void SpawnPickup(Vector3 spawnPosition)
     {
         xpPickupPrefab = GameManager.Instance.ObjectPoolingService.XpPool.GetXpFromPool();
-        xpPickupPrefab.transform.position = spawnPosition;
+        if(xpPickupPrefab != null)
+            xpPickupPrefab.transform.position = spawnPosition;
     }
 }

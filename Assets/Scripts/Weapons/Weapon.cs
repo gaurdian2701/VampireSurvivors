@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 public class Weapon : MonoBehaviour
 {
+    public WeaponType WeaponType;
     public int BaseDamage { get; private set; }
     public int NumberOfWeaponsToSpawn { get; private set; }
     public float BaseAttackSpeed { get; private set; }
@@ -12,9 +13,6 @@ public class Weapon : MonoBehaviour
     
     protected Transform playerTransform;
     
-    public readonly int baseDamageIncreaseRate = 2;
-    public readonly float baseAttackSpeedIncreaseRate = 50f;
-    public readonly float baseKnockBackForceIncreaseRate = 1f;
     public void InitWeaponData(WeaponScriptableObject weaponData)
     {
         BaseDamage = weaponData.Damage;
@@ -51,7 +49,20 @@ public class Weapon : MonoBehaviour
             enemy.TakeDamage(BaseDamage, BaseKnockBackForce);
     }
     public virtual void Attack() { }
-    public void SetBaseDamage(int someDamage) => BaseDamage = someDamage;
-    public void SetBaseAttackSpeed(float someAttackSpeed) => BaseAttackSpeed = someAttackSpeed;
-    public void SetBaseKnockBackForce(float someKnockBackForce) => BaseKnockBackForce = someKnockBackForce;
+
+    public void InitalizeBaseStats(int Damage,
+        float AttackSpeed,
+        float KnockbackForce)
+    {
+        BaseDamage = Damage;
+        BaseAttackSpeed = AttackSpeed;
+        BaseKnockBackForce = KnockbackForce;
+    }
+    
+    public void UpgradeBaseStats(UpgradeData upgradeData)
+    {
+        BaseDamage += upgradeData.Damage;
+        BaseAttackSpeed += upgradeData.AttackSpeed;
+        BaseKnockBackForce += upgradeData.Knockback;
+    }
 }

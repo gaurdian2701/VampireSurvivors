@@ -1,5 +1,5 @@
 public enum WeaponType
 {
-    AXE,
-    CROSSBOW
+    MELEE,
+    RANGED
 }

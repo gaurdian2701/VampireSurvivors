@@ -17,12 +17,30 @@ public class PlayerController : Character, IPausable
     private bool attackingWithMeleeWeapon;
     private bool playerPaused;
     private float currentSpeed;
+    
+    public int CurrentPlayerLevel { get; private set; }
 
     private void Awake()
     {
         Init(playerScriptableObject.PlayerMaxHealth, playerScriptableObject.PlayerMovementSpeed);
         playerXpController = new PlayerXpController(playerXpControllerScriptableObject);
         currentSpeed = MaxSpeed;
+        SubscribeToEvents();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromEvents();
+    }
+
+    private void SubscribeToEvents()
+    {
+        GameManager.Instance.EventService.OnPlayerLevelledUp += ResetPlayerAttributesOnLevelUp;
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        GameManager.Instance.EventService.OnPlayerLevelledUp -= ResetPlayerAttributesOnLevelUp;
     }
     private void Start()
     {
@@ -35,7 +53,12 @@ public class PlayerController : Character, IPausable
         MovePlayer();
         AttackWithMeleeWeapon();
     }
-    
+
+    private void ResetPlayerAttributesOnLevelUp()
+    {
+        HealthController.ResetHealth();
+        CurrentPlayerLevel++;
+    }
     public void Pause()
     {
         playerPaused = true;
@@ -49,6 +72,7 @@ public class PlayerController : Character, IPausable
     }
 
     public int GetPlayerMaxHealth() => HealthController.GetMaxHealth();
+    public int GetCurrentHealthOfPlayer() => HealthController.CurrentHealth;
     public int GetCurrentXpToNextLevel() => playerXpController.currentXpToNextLevel;
     public int GetCurrentPlayerXp() => playerXpController.currentXp;
 

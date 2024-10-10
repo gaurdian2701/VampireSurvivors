@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
+using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
@@ -10,7 +13,8 @@ using Image = UnityEngine.UI.Image;
 using Random = System.Random;
 
 public class UIService : MonoBehaviour
-{
+{ 
+    [SerializeField] private UpgradesListScriptableObject upgradesListScriptableObjectData;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject upgradesPanel;
     [FormerlySerializedAs("settingsPanel")] [SerializeField] private GameObject optionsPanel;
@@ -29,22 +33,18 @@ public class UIService : MonoBehaviour
     
     private float currentXpToNextLevel;
     
-    private int currentMaxPlayerHealth;
-    private int currentPlayerLevel;
-    private int numberOfUpgradeTypes = Enum.GetNames(typeof(UpgradeType)).Length;
+    private int maxPlayerHealth;
 
     private const float shakeFrequency = 100f;
     private const float shakeAmplitude = 5f;
     private const float shakeDuration = 0.5f;
 
-    private int[] weaponsData;
-    private int[] upgradesData;
+    private UpgradeData[] upgradesData;
 
     public void Init()
     {
         SubscribeToEvents();
         playerXpBar.fillAmount = 0f;
-        currentPlayerLevel = 1;
         pausePanel.SetActive(false);
         upgradesPanel.SetActive(false);
         FillUpgradeCaches();
@@ -52,21 +52,24 @@ public class UIService : MonoBehaviour
 
     private void FillUpgradeCaches()
     {
-        weaponsData = new int[3];
-        for (int i = 0; i < weaponsData.Length; i++)
-            weaponsData[i] = 0;
-        
-        upgradesData = new int[numberOfUpgradeTypes];
-        for (int i = 0; i < upgradesData.Length; i++)
-            upgradesData[i] = i;
+        if (upgradesListScriptableObjectData.Upgrades.Count < 3)
+        {
+            Debug.LogError("THERE SHOULD BE ATLEAST 3 UPGRADES CREATED. " +
+                           "MAKE SURE YOU HAVE CREATED ENOUGH UPGRADES USING THE UPGRADE CREATION TOOL.");
+            EditorApplication.isPlaying = false;
+        }
+        upgradesData = new UpgradeData[upgradesListScriptableObjectData.Upgrades.Count];
+        for(int i = 0; i < upgradesListScriptableObjectData.Upgrades.Count; i++)
+            upgradesData[i] = upgradesListScriptableObjectData.Upgrades[i];
     }
 
     private void Start()
     {
-        xpBarOriginalPos = playerXpBar.rectTransform.anchoredPosition; ;
+        xpBarOriginalPos = playerXpBar.rectTransform.anchoredPosition; 
         playerController = GameManager.Instance.PlayerController;
-        currentMaxPlayerHealth = playerController.GetPlayerMaxHealth();
+        maxPlayerHealth = playerController.GetPlayerMaxHealth();
         currentXpToNextLevel = playerController.GetCurrentXpToNextLevel();
+        playerXpLevelText.text = $"{playerController.CurrentPlayerLevel}";
     }
 
     private void OnDestroy()
@@ -76,10 +79,23 @@ public class UIService : MonoBehaviour
 
     private void Update()
     {
+        UpdateHealthBar();
+        AnimateBars();
+    }
+
+    private void AnimateBars()
+    {
         if(xpBarShakeCoroutineActive)
-            playerXpBar.rectTransform.anchoredPosition = new Vector2(xpBarOriginalPos.x + Mathf.Sin(Time.time * shakeFrequency) * shakeAmplitude, xpBarOriginalPos.y);
+            playerXpBar.rectTransform.anchoredPosition = new Vector2(xpBarOriginalPos.x + Mathf.Sin(Time.time * shakeFrequency) * shakeAmplitude, 
+                xpBarOriginalPos.y);
         if(healthBarShakeCoroutineActive)
-            playerHealthBar.rectTransform.anchoredPosition = new Vector2(healthBarOriginalPos.x + Mathf.Sin(Time.time * shakeFrequency) * shakeAmplitude, healthBarOriginalPos.y);
+            playerHealthBar.rectTransform.anchoredPosition = new Vector2(healthBarOriginalPos.x + Mathf.Sin(Time.time * shakeFrequency) * shakeAmplitude, 
+                healthBarOriginalPos.y);
+    }
+
+    private void UpdateHealthBar()
+    {
+        playerHealthBar.fillAmount = (float)playerController.GetCurrentHealthOfPlayer()/maxPlayerHealth;
     }
 
     private void SubscribeToEvents()
@@ -142,8 +158,7 @@ public class UIService : MonoBehaviour
     }
 
     private void DecreaseHealth(int damage)
-    {
-        playerHealthBar.fillAmount -= (float) damage / currentMaxPlayerHealth;
+    { 
         if(!healthBarShakeCoroutineActive)
             StartCoroutine(nameof(ShakeHealthBarCoroutine));
     }
@@ -173,38 +188,49 @@ public class UIService : MonoBehaviour
 
     private void UpdatePlayerLevelUI()
     {
-        currentPlayerLevel++;
         playerXpBar.fillAmount = 0f;
-        playerXpLevelText.text = $"{currentPlayerLevel}";
+        playerXpLevelText.text = $"{playerController.CurrentPlayerLevel}";
         upgradesPanel.SetActive(true);
     }
 
     private void GenerateUpgradesForPlayer()
     {
-        FillUpgradeText<WeaponType>(weaponToBeUpgradedTextList, weaponsData);
-        FillUpgradeText<UpgradeType>(upgradeTypeTextList, upgradesData);
+        MiscFunctions.ShuffleArray(upgradesData);
+        string weaponTypeText;
+        string upgradeTypeText;
+        
+        for (int i = 0; i < weaponToBeUpgradedTextList.Count; i++)
+        {
+            weaponTypeText = String.Empty;
+            upgradeTypeText = String.Empty;
+            GenerateUpgradeText(ref weaponTypeText, ref upgradeTypeText, upgradesData[i]);
+            weaponToBeUpgradedTextList[i].text = weaponTypeText;
+            upgradeTypeTextList[i].text = upgradeTypeText;
+        }
     }
 
-    private void FillUpgradeText<T>(List<TextMeshProUGUI> textList, int[] dataArray) 
-        where T : Enum
+    private void GenerateUpgradeText(ref string weaponTypeText,
+        ref string upgradeTypeText,
+        UpgradeData upgradeData)
     {
-        MiscFunctions.ShuffleArray(dataArray);
-        int i = 0, j = 0;
+        upgradeTypeText += "Damage +" + upgradeData.Damage + "\n" +
+                           "Attack Speed + " + upgradeData.AttackSpeed + "\n" +
+                           "Knockback + " + upgradeData.Knockback + "\n" +
+                           "Number + " + upgradeData.NumberOfWeapons + "\n";
 
-        while (i < textList.Count)
+        if (upgradeData.WeaponType == WeaponType.RANGED)
         {
-            textList[i].text = Enum.GetName(typeof(T), dataArray[j]);
-            i++;
-            if (j < dataArray.Length - 1)
-                j++;
+            weaponTypeText = "RANGED WEAPON";
+            upgradeTypeText += "Attack Spread + " + upgradeData.ProjectileSpread;
         }
+        else
+            weaponTypeText = "MELEE WEAPON";
     }
 
     public void OnUpgradeChosen(int upgradeChosen)
     {
         GameManager.Instance.playerWeaponsManager.
-            UpgradeWeapons((WeaponType)weaponsData[upgradeChosen], 
-                (UpgradeType)upgradesData[upgradeChosen]);   
+            UpgradeWeapons(upgradesData[upgradeChosen]);   
         GameManager.Instance.EventService.InvokePlayerSelectedUpgradeEvent();
     }
 }

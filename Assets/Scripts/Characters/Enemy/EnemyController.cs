@@ -180,7 +180,7 @@ public class EnemyController : Character, IPausable
     {
         if (other.CompareTag("Player") && !collidedWithPlayer)
         {
-            GameManager.Instance.EventService.InvokePlayerTookDamageEvent(enemyDamage);
+            other.GetComponent<PlayerController>().TakeDamage(enemyDamage);
             collidedWithPlayer = true;
         }
     }
