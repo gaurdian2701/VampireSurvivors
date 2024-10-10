@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
@@ -17,6 +18,7 @@ public class UIService : MonoBehaviour
     [SerializeField] private UpgradesListScriptableObject upgradesListScriptableObjectData;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject upgradesPanel;
+    [SerializeField] private GameObject gameOverPanel;
     [FormerlySerializedAs("settingsPanel")] [SerializeField] private GameObject optionsPanel;
     [SerializeField] private Image playerHealthBar;
     [SerializeField] private Image playerXpBar;
@@ -47,6 +49,7 @@ public class UIService : MonoBehaviour
         playerXpBar.fillAmount = 0f;
         pausePanel.SetActive(false);
         upgradesPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
         FillUpgradeCaches();
     }
 
@@ -76,7 +79,24 @@ public class UIService : MonoBehaviour
     {
         UnsubscribeFromEvents();
     }
-
+    private void SubscribeToEvents()
+    {
+        GameManager.Instance.EventService.OnGameEnteredPauseState += OnGamePause;
+        GameManager.Instance.EventService.OnGameEnteredPlayState += OnGameResume;
+        GameManager.Instance.EventService.OnPlayerTookDamage += DecreaseHealth;
+        GameManager.Instance.EventService.OnPlayerPickedUpXp += IncreaseXp;
+        GameManager.Instance.EventService.OnPlayerLevelledUp += UpdatePlayerLevelUI;
+        GameManager.Instance.EventService.OnPlayerDied += OnGameOver;
+    }
+    private void UnsubscribeFromEvents()
+    {
+        GameManager.Instance.EventService.OnGameEnteredPauseState -= OnGamePause;
+        GameManager.Instance.EventService.OnGameEnteredPlayState -= OnGameResume;
+        GameManager.Instance.EventService.OnPlayerTookDamage -= DecreaseHealth;
+        GameManager.Instance.EventService.OnPlayerPickedUpXp -= IncreaseXp;
+        GameManager.Instance.EventService.OnPlayerLevelledUp -= UpdatePlayerLevelUI;
+        GameManager.Instance.EventService.OnPlayerDied -= OnGameOver;
+    }
     private void Update()
     {
         UpdateHealthBar();
@@ -96,24 +116,6 @@ public class UIService : MonoBehaviour
     private void UpdateHealthBar()
     {
         playerHealthBar.fillAmount = (float)playerController.GetCurrentHealthOfPlayer()/maxPlayerHealth;
-    }
-
-    private void SubscribeToEvents()
-    {
-        GameManager.Instance.EventService.OnGameEnteredPauseState += OnGamePause;
-        GameManager.Instance.EventService.OnGameEnteredPlayState += OnGameResume;
-        GameManager.Instance.EventService.OnPlayerTookDamage += DecreaseHealth;
-        GameManager.Instance.EventService.OnPlayerPickedUpXp += IncreaseXp;
-        GameManager.Instance.EventService.OnPlayerLevelledUp += UpdatePlayerLevelUI; 
-    }
-
-    private void UnsubscribeFromEvents()
-    {
-        GameManager.Instance.EventService.OnGameEnteredPauseState -= OnGamePause;
-        GameManager.Instance.EventService.OnGameEnteredPlayState -= OnGameResume;
-        GameManager.Instance.EventService.OnPlayerTookDamage -= DecreaseHealth;
-        GameManager.Instance.EventService.OnPlayerPickedUpXp -= IncreaseXp;
-        GameManager.Instance.EventService.OnPlayerLevelledUp -= UpdatePlayerLevelUI;
     }
 
     private void OnGamePause()
@@ -138,6 +140,16 @@ public class UIService : MonoBehaviour
         pausePanel.SetActive(false);
         optionsPanel.SetActive(false);
         upgradesPanel.SetActive(false);
+    }
+
+    private void OnGameOver()
+    {
+        gameOverPanel.gameObject.SetActive(true);
+    }
+
+    public void OnRestartButtonClicked()
+    {
+        GameManager.Instance.ReloadScene();
     }
 
     public void OnResumeButtonClicked()

@@ -13,6 +13,8 @@ public class EventService
     public delegate void OnPlayerPressedAttackButtonDelegate();
     public delegate void OnPlayerSelectedUpgradeEventDelegate();
 
+    public delegate void OnPlayerDiedDelegate();
+
     public event OnEnemyDiedDelegate OnEnemyDied;
     public event OnGameEnteredPlayStateDelegate OnGameEnteredPlayState;
     public event OnGameEnteredPauseStateDelegate OnGameEnteredPauseState;
@@ -21,6 +23,7 @@ public class EventService
     public event OnPlayerLevelledUpDelegate OnPlayerLevelledUp;
     public event OnPlayerPressedAttackButtonDelegate OnPlayerPressedAttackButton;
     public event OnPlayerSelectedUpgradeEventDelegate OnPlayerSelectedUpgrade;
+    public event OnPlayerDiedDelegate OnPlayerDied;
     
     
     
@@ -32,4 +35,5 @@ public class EventService
     public void InvokePLayerLevelledUpEvent() => OnPlayerLevelledUp?.Invoke();
     public void InvokePlayerPressedAttackButtonEvent() => OnPlayerPressedAttackButton?.Invoke();
     public void InvokePlayerSelectedUpgradeEvent() => OnPlayerSelectedUpgrade?.Invoke();
+    public void InvokePlayerDiedEvent() => OnPlayerDied?.Invoke();
 }

@@ -128,4 +128,9 @@ public class PlayerController : Character, IPausable
             xp.SetActive(false);
         }
     }
+
+    public override void Die()
+    {
+        GameManager.Instance.EventService.InvokePlayerDiedEvent();
+    }
 }

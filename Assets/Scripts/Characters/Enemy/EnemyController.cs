@@ -37,6 +37,7 @@ public class EnemyController : Character, IPausable
     private const float knockBackDuration = 2.5f;
     private const int milliseconds = 100;
     private const int playerLevelMilestoneForIncreasingStats = 5;
+    private const int enemyAttackCooldownTime = 500;
     
     private void Awake()
     {
@@ -193,8 +194,15 @@ public class EnemyController : Character, IPausable
         if (other.CompareTag("Player") && !collidedWithPlayer)
         {
             other.GetComponent<PlayerController>().TakeDamage(enemyDamage);
-            collidedWithPlayer = true;
+            WaitForAttackCooldown();
         }
+    }
+
+    private async void WaitForAttackCooldown()
+    {
+        collidedWithPlayer = true;
+        await Task.Delay(enemyAttackCooldownTime);
+        collidedWithPlayer = false;
     }
 
     private void OnTriggerExit2D(Collider2D other)

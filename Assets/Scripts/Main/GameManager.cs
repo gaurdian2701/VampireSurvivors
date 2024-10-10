@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 public class GameManager : StateMachine
@@ -61,6 +62,7 @@ public class GameManager : StateMachine
         EventService.OnGameEnteredPlayState += SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState += SwitchState <PausedState>;
         EventService.OnPlayerSelectedUpgrade += SwitchState<PlayingState>;
+        EventService.OnPlayerDied += GameOver;
     }
 
     private void UnsubscribeFromEvents()
@@ -68,6 +70,7 @@ public class GameManager : StateMachine
         EventService.OnGameEnteredPlayState -= SwitchState <PlayingState>;
         EventService.OnGameEnteredPauseState -= SwitchState <PausedState>;
         EventService.OnPlayerSelectedUpgrade -= SwitchState<PlayingState>;
+        EventService.OnPlayerDied -= GameOver;
     }
     protected override void AddStates()
     {
@@ -86,6 +89,11 @@ public class GameManager : StateMachine
         Time.timeScale = gameSpeed;
         UpdateStateMachine();
     }
-    
+
+    private void GameOver()
+    {
+        PlayerController.gameObject.SetActive(false);
+    }
     public void ChangeGamePauseType(GamePauseType gamePauseType) => currentGamePauseType = gamePauseType;
+    public void ReloadScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 }
