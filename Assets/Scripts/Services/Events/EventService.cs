@@ -12,9 +12,10 @@ public class EventService
     public delegate void OnPlayerLevelledUpDelegate();
     public delegate void OnPlayerPressedAttackButtonDelegate();
     public delegate void OnPlayerSelectedUpgradeEventDelegate();
-
     public delegate void OnPlayerDiedDelegate();
-
+    public delegate void OnPlayerReachedMilestoneDelegate();
+    
+    
     public event OnEnemyDiedDelegate OnEnemyDied;
     public event OnGameEnteredPlayStateDelegate OnGameEnteredPlayState;
     public event OnGameEnteredPauseStateDelegate OnGameEnteredPauseState;
@@ -24,7 +25,7 @@ public class EventService
     public event OnPlayerPressedAttackButtonDelegate OnPlayerPressedAttackButton;
     public event OnPlayerSelectedUpgradeEventDelegate OnPlayerSelectedUpgrade;
     public event OnPlayerDiedDelegate OnPlayerDied;
-    
+    public event OnPlayerReachedMilestoneDelegate OnPlayerReachedMilestone;
     
     
     public void InvokeEnemyDiedEvent(Vector3 enemyDeathLocation) => OnEnemyDied?.Invoke(enemyDeathLocation);
@@ -36,4 +37,5 @@ public class EventService
     public void InvokePlayerPressedAttackButtonEvent() => OnPlayerPressedAttackButton?.Invoke();
     public void InvokePlayerSelectedUpgradeEvent() => OnPlayerSelectedUpgrade?.Invoke();
     public void InvokePlayerDiedEvent() => OnPlayerDied?.Invoke();
+    public void InvokePlayerReachedMilestoneEvent() => OnPlayerReachedMilestone?.Invoke();
 }

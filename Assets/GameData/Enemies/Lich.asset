@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81eac7fc4d560e94ab1f28db2efd0516, type: 3}
+  m_Name: Lich
+  m_EditorClassIdentifier: 
+  EnemySprite: {fileID: 21300000, guid: fec06a59a9ef22c478613f949fda524c, type: 3}
+  EnemyMaxHealth: 3
+  EnemyDamage: 1
+  EnemySpeed: 3
+  EnemyStoppingDistance: 0
+  EnemyMovementType: 0
+  EnemyMaxHealthStatIncreaseRate: 1
+  EnemySpeedStatIncreaseRate: 1
+  DamageStatIncreaseRate: 1

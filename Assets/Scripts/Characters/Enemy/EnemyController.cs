@@ -17,7 +17,7 @@ public class EnemyController : Character, IPausable
     [SerializeField] private Animator animator;
     
     
-    public EnemyMovement movementController;
+    public EnemyMovement MovementController;
     
     private Transform playerTransform;
     
@@ -72,16 +72,18 @@ public class EnemyController : Character, IPausable
 
     private void SubscribeToEvents()
     {
-        GameManager.Instance.EventService.OnPlayerLevelledUp += CheckForStatIncrease;
+        GameManager.Instance.EventService.OnPlayerLevelledUp += DoStatIncrease;
         GameManager.Instance.EventService.OnGameEnteredPauseState += Pause;
         GameManager.Instance.EventService.OnGameEnteredPlayState += Resume;
+        GameManager.Instance.EventService.OnPlayerReachedMilestone += DoStatIncrease;
     }
 
     private void UnsubscribeFromEvents()
     {
-        GameManager.Instance.EventService.OnPlayerLevelledUp -= CheckForStatIncrease;
+        GameManager.Instance.EventService.OnPlayerLevelledUp -= DoStatIncrease;
         GameManager.Instance.EventService.OnGameEnteredPauseState -= Pause;
         GameManager.Instance.EventService.OnGameEnteredPlayState -= Resume;
+        GameManager.Instance.EventService.OnPlayerReachedMilestone -= DoStatIncrease;
     }
     public void InitializeEnemyData(EnemyScriptableObject enemyData)
     {
@@ -89,11 +91,8 @@ public class EnemyController : Character, IPausable
     }
     public Sprite GetEnemySprite() => enemyData.EnemySprite;
 
-    private void CheckForStatIncrease()
+    private void DoStatIncrease()
     {
-        if (GameManager.Instance.PlayerController.CurrentPlayerLevel % playerLevelMilestoneForIncreasingStats != 0)
-            return;
-        
         HealthController.SetMaxHealth(MaxHealth + enemyData.EnemyMaxHealthStatIncreaseRate);
         enemySpeedModifier += enemyData.EnemySpeedStatIncreaseRate;
         enemyDamage += enemyData.DamageStatIncreaseRate;
@@ -109,11 +108,11 @@ public class EnemyController : Character, IPausable
         {
             default:
             case EnemyMovementType.STANDARD:
-                movementController = new StandardMovement(playerTransform, transform, MaxSpeed);
+                MovementController = new StandardMovement(playerTransform, transform, MaxSpeed);
                 break;
             
             case EnemyMovementType.SINUSOIDAL:
-                movementController = new SinusoidalMovement(playerTransform, transform, MaxSpeed);
+                MovementController = new SinusoidalMovement(playerTransform, transform, MaxSpeed);
                 break;
         }
     }
@@ -135,14 +134,14 @@ public class EnemyController : Character, IPausable
         CheckStoppingDistance();
     }
 
-    private void MoveEnemy() => movementController.UpdatePosition();
+    private void MoveEnemy() => MovementController.UpdatePosition();
 
     private void CheckStoppingDistance()
     {
-        if (movementController.DirectionToPlayer.magnitude < stoppingDistance)
-            movementController.SetCurrentEnemySpeed(0f);
+        if (MovementController.DirectionToPlayer.magnitude < stoppingDistance)
+            MovementController.SetCurrentEnemySpeed(0f);
         else
-            movementController.SetCurrentEnemySpeed(MaxSpeed);
+            MovementController.SetCurrentEnemySpeed(MaxSpeed);
     }
 
     private void UpdateSpriteDirection()
@@ -164,21 +163,21 @@ public class EnemyController : Character, IPausable
     private async void Async_InitiateKnockBack(float knockBackForce)
     {
         isInKnockBack = true;
-        movementController.SetCurrentEnemySpeed(0f);
+        MovementController.SetCurrentEnemySpeed(0f);
         enemySpriteRenderer.color = enemyColorOnHit;
         Vector2 knockBackDirection = transform.position - playerTransform.position;
         rb.AddForce(knockBackDirection.normalized * knockBackForce, ForceMode2D.Impulse);
 
         await NullifyVelocities((int)Math.Abs(knockBackDuration * milliseconds));
 
-        movementController.SetCurrentEnemySpeed(MaxSpeed);
+        MovementController.SetCurrentEnemySpeed(MaxSpeed);
         enemySpriteRenderer.color = originalEnemyColor;
         isInKnockBack = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-       movementController.SetCurrentEnemySpeed(0f);
+       MovementController.SetCurrentEnemySpeed(0f);
     }
     private async void OnCollisionExit2D(Collision2D collision)
     {
@@ -186,7 +185,7 @@ public class EnemyController : Character, IPausable
         //they start to gain velocity, which is undesired behaviour.
         //This did not work with OnCollisionEnter2D for some reason.
         await NullifyVelocities((int)Math.Abs(knockBackDuration * milliseconds));
-        movementController.SetCurrentEnemySpeed(MaxSpeed);
+        MovementController.SetCurrentEnemySpeed(MaxSpeed);
     }
 
     private void OnTriggerStay2D(Collider2D other)

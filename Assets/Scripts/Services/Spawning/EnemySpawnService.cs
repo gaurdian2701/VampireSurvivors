@@ -14,14 +14,16 @@ public class EnemySpawnService : IPausable
     
     private const float spawnCircleRadius = 15f;
     
-    private static int currentNumberOfKillsToInitiateHorde;
+    private int currentNumberOfKillsToInitiateHorde;
     private int currentKillCountForHorde;
+    private int hordeIncreaseRate;
 
     public EnemySpawnService(EnemySpawnServiceScriptableObject enemySpawnServiceScriptableObject)
     {
         startingNumberOfEnemies = enemySpawnServiceScriptableObject.StartingNumberOfEnemies;
         numberOfEnemiesInHorde = enemySpawnServiceScriptableObject.NumberOfEnemiesInHorde;
         currentNumberOfKillsToInitiateHorde = enemySpawnServiceScriptableObject.StartingNumberOfKillsToInitiateHorde;
+        hordeIncreaseRate = enemySpawnServiceScriptableObject.HordeIncreaseRate;
         playerTransform = GameManager.Instance.PlayerController.transform;
         currentKillCountForHorde = 0;
 
@@ -39,16 +41,23 @@ public class EnemySpawnService : IPausable
     private void SubscribeToEvents()
     {
         GameManager.Instance.EventService.OnEnemyDied += OnEnemyDiedListener;
+        GameManager.Instance.EventService.OnPlayerReachedMilestone += IncreaseSpawnRate;
     }
 
     private void UnsubscribeFromEvents()
     {
         GameManager.Instance.EventService.OnEnemyDied -= OnEnemyDiedListener;
+        GameManager.Instance.EventService.OnPlayerReachedMilestone -= IncreaseSpawnRate;
+    }
+
+    private void IncreaseSpawnRate()
+    {
+        currentKillCountForHorde++;
+        numberOfEnemiesInHorde += hordeIncreaseRate;
     }
 
     private void OnEnemyDiedListener(Vector3 enemyPosition)
     {
-        currentKillCountForHorde++;
         if (currentKillCountForHorde <= currentNumberOfKillsToInitiateHorde)  
             SpawnEnemy();
         else
@@ -77,7 +86,6 @@ public class EnemySpawnService : IPausable
     private void SpawnHorde()
     {
         currentKillCountForHorde = 0;
-        currentNumberOfKillsToInitiateHorde += 5;
         for (int i = 0; i < numberOfEnemiesInHorde; i++)
         {
             GetEnemyFromPool();

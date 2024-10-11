@@ -17,7 +17,8 @@ public class PlayerController : Character, IPausable
     private bool attackingWithMeleeWeapon;
     private bool playerPaused;
     private float currentSpeed;
-    
+
+    private const int playerLevelMilestone = 5;
     public int CurrentPlayerLevel { get; private set; }
 
     private void Awake()
@@ -58,6 +59,10 @@ public class PlayerController : Character, IPausable
     {
         HealthController.ResetHealth();
         CurrentPlayerLevel++;
+        GameManager.Instance.UIService.UpdatePlayerLevelUI();
+        
+        if(CurrentPlayerLevel % playerLevelMilestone == 0)
+            GameManager.Instance.EventService.InvokePlayerReachedMilestoneEvent();
     }
     public void Pause()
     {

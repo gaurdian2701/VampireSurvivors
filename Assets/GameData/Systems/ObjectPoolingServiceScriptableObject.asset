@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ObjectPoolingServiceScriptableObject
   m_EditorClassIdentifier: 
   EnemyPrefabsList:
+  - {fileID: 5201406064040359947, guid: 0e065e3f78c158c45b7c1205f5f2a06b, type: 3}
   - {fileID: 5201406064040359947, guid: b83fb5ccf17fa5a4fbd804d18c9f3468, type: 3}
   - {fileID: 5201406064040359947, guid: 090dfefb23c28a649aabafb53e48f3b0, type: 3}
   MaxEnemies: 30

@@ -20,9 +20,11 @@ public class GameManager : StateMachine
     [Header("Script References")]
     public PlayerController PlayerController;
     [FormerlySerializedAs("PlayerWeaponController")] public WeaponsManager playerWeaponsManager;
-    public UIService uiService;
+    [FormerlySerializedAs("uiService")] public UIService UIService;
     public EventService EventService;
     public ObjectPoolingService ObjectPoolingService;
+
+    public bool CanPause = true;
     
     private EnemySpawnService enemySpawnService;
     private PickupSpawnService pickupSpawnService;
@@ -49,7 +51,7 @@ public class GameManager : StateMachine
         ObjectPoolingService = new ObjectPoolingService(objectPoolingServiceScriptableObject);
         enemySpawnService = new EnemySpawnService(enemySpawnServiceScriptableObject);
         pickupSpawnService = new PickupSpawnService();
-        uiService.Init();
+        UIService.Init();
     }
 
     private void OnDestroy()
@@ -93,6 +95,7 @@ public class GameManager : StateMachine
     private void GameOver()
     {
         PlayerController.gameObject.SetActive(false);
+        CanPause = false;
     }
     public void ChangeGamePauseType(GamePauseType gamePauseType) => currentGamePauseType = gamePauseType;
     public void ReloadScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

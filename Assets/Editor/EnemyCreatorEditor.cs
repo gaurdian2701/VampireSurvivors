@@ -92,6 +92,10 @@ public class EnemyCreatorEditor : EditorWindow
 
         enemySpeedField = new FloatField("Enemy Speed");
         enemyStoppingDistanceField = new FloatField("EnemyStoppingDistance");
+        
+        enemyMaxHealthStatIncreaseRateField = new IntegerField("Enemy Max Health Stat Increase Rate");
+        enemySpeedStatIncreaseRateField = new FloatField("Enemy Speed Stat Increase Rate");
+        enemyDamageStatIncreaseRateField = new IntegerField("Enemy Speed Stat Increase Rate");
 
         spriteField = new ObjectField("Enemy Sprite");
         spriteField.RegisterValueChangedCallback(GetSpritePreview);
@@ -126,6 +130,9 @@ public class EnemyCreatorEditor : EditorWindow
         leftPaneBox.Add(enemySpeedField);
         leftPaneBox.Add(enemyStoppingDistanceField);
         leftPaneBox.Add(enemyMovementTypeDropdownField);
+        leftPaneBox.Add(enemyMaxHealthStatIncreaseRateField);
+        leftPaneBox.Add(enemyDamageStatIncreaseRateField);
+        leftPaneBox.Add(enemySpeedStatIncreaseRateField);
         leftPaneBox.Add(imageForNewEnemy);
         leftPaneBox.Add(createNewEnemyButton);
     }

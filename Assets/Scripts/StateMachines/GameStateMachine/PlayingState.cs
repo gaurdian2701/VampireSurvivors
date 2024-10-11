@@ -43,7 +43,7 @@ public class PlayingState : State
 
     public override void UpdateState()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && gameManager.CanPause)
         {
             gameManager.ChangeGamePauseType(GamePauseType.PauseOnPlayerInput);
             gameManager.EventService.InvokeGameEnteredPauseStateEvent();

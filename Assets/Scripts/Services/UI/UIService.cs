@@ -85,7 +85,6 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.OnGameEnteredPlayState += OnGameResume;
         GameManager.Instance.EventService.OnPlayerTookDamage += DecreaseHealth;
         GameManager.Instance.EventService.OnPlayerPickedUpXp += IncreaseXp;
-        GameManager.Instance.EventService.OnPlayerLevelledUp += UpdatePlayerLevelUI;
         GameManager.Instance.EventService.OnPlayerDied += OnGameOver;
     }
     private void UnsubscribeFromEvents()
@@ -94,7 +93,6 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.OnGameEnteredPlayState -= OnGameResume;
         GameManager.Instance.EventService.OnPlayerTookDamage -= DecreaseHealth;
         GameManager.Instance.EventService.OnPlayerPickedUpXp -= IncreaseXp;
-        GameManager.Instance.EventService.OnPlayerLevelledUp -= UpdatePlayerLevelUI;
         GameManager.Instance.EventService.OnPlayerDied -= OnGameOver;
     }
     private void Update()
@@ -202,7 +200,7 @@ public class UIService : MonoBehaviour
         playerHealthBar.rectTransform.anchoredPosition = healthBarOriginalPos;
     }
 
-    private void UpdatePlayerLevelUI()
+    public void UpdatePlayerLevelUI()
     {
         playerXpBar.fillAmount = 0f;
         playerXpLevelText.text = $"{playerController.CurrentPlayerLevel}";
