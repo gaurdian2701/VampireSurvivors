@@ -96,4 +96,10 @@ public class GameManager : StateMachine
     }
     public void ChangeGamePauseType(GamePauseType gamePauseType) => currentGamePauseType = gamePauseType;
     public void ReloadScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+    public void QuitGame()
+    {
+        PlayerPrefs.SetInt("HIGH SCORE MAX LEVEL", PlayerController.CurrentPlayerLevel);
+        SceneManager.LoadScene((int)SceneBuildIndices.MAIN_MENU_SCENE);
+    }
 }

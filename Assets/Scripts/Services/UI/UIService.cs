@@ -157,6 +157,10 @@ public class UIService : MonoBehaviour
         GameManager.Instance.EventService.InvokeGameEnteredPlayStateEvent();
     }
 
+    public void OnQuitButtonClicked()
+    {
+        GameManager.Instance.QuitGame();
+    }
     public void OnOptionsButtonClicked()
     {
         pausePanel.SetActive(false);
